@@ -1,6 +1,6 @@
 # Type Is [![Build Status](https://travis-ci.org/expressjs/type-is.png)](https://travis-ci.org/expressjs/type-is)
 
-Infer the content type if a request. Extracted from [koa](https://github.com/koajs/koa) for general use.
+Infer the content type of a request. Extracted from [koa](https://github.com/koajs/koa) for general use.
 
 ## API
 
