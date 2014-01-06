@@ -37,13 +37,14 @@ module.exports = function (req, types) {
   if (!ct) return false
 
   // paramless
-  ct = ct.split(';')[0];
+  var i = ct.indexOf(';')
+  ct = ~i ? ct.slice(0, i) : ct
 
   // no types, return the content type
   if (!types || !types.length) return ct;
 
   var type;
-  for (var i = 0; i < types.length; i++)
+  for (i = types.length; i--;)
     if (mimeMatch(normalize(type = types[i]), ct))
       return ~type.indexOf('*') ? ct : type
 
