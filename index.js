@@ -37,7 +37,8 @@ module.exports = function (req, types) {
   if (!ct) return false
 
   // paramless
-  ct = ct.split(';')[0];
+  var index = ct.indexOf(';')
+  ct = ~index ? ct.slice(0, index) : ct
 
   // no types, return the content type
   if (!types || !types.length) return ct;
