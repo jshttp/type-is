@@ -1,7 +1,7 @@
 {
   "name": "type-is",
   "description": "Infer the content type if a request",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Jonathan Ong",
     "email": "me@jongleberry.com",
@@ -9,14 +9,7 @@
     "twitter": "https://twitter.com/jongleberry"
   },
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expressjs/type-is.git"
-  },
-  "bugs": {
-    "mail": "me@jongleberry.com",
-    "url": "https://github.com/expressjs/type-is/issues"
-  },
+  "repository": "expressjs/type-is",
   "dependencies": {
     "mime": "~1.2.11"
   },
@@ -25,6 +18,6 @@
     "should": "*"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha --require should --reporter spec"
   }
 }
