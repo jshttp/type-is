@@ -1,6 +1,35 @@
 # Type Is [![Build Status](https://travis-ci.org/expressjs/type-is.png)](https://travis-ci.org/expressjs/type-is)
 
-Infer the content type of a request. Extracted from [koa](https://github.com/koajs/koa) for general use.
+Infer the content type of a request. 
+Extracted from [koa](https://github.com/koajs/koa) for general use.
+
+Here's an example body parser:
+
+```js
+var is = require('type-is');
+var parse = require('body');
+var busboy = require('busboy');
+
+function bodyParser(req, res, next) {
+  var hasRequestBody = 'content-type' in req.headers
+    || 'transfer-encoding' in req.headers;
+  if (!hasRequestBody) return next();
+  
+  switch (is(req, ['urlencoded', 'json', 'multipart'])) {
+    case 'urlencoded':
+      // parse urlencoded body
+      break
+    case 'json':
+      // parse json body
+      break
+    case 'multipart':
+      // parse multipart body
+      break
+    default:
+      // 415 error code
+  }
+}
+```
 
 ## API
 
