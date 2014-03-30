@@ -56,6 +56,14 @@ module.exports = function (req, types) {
  * Normalize a mime type.
  * If it's a shorthand, expand it to a valid mime type.
  *
+ * In general, you probably want:
+ *
+ *   var type = is(req, ['urlencoded', 'json', 'multipart']);
+ *
+ * Then use the appropriate body parsers.
+ * These three are the most common request body types
+ * and are thus ensured to work.
+ *
  * @param {String} type
  * @api private
  */
@@ -63,6 +71,9 @@ module.exports = function (req, types) {
 function normalize(type) {
   switch (type) {
     case 'urlencoded': return 'application/x-www-form-urlencoded';
+    case 'multipart':
+      type = 'multipart/*';
+      break;
   }
 
   return ~type.indexOf('/') ? type : mime.lookup(type);

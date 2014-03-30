@@ -88,4 +88,18 @@ describe('is(req, type)', function(){
       is(r, ['urlencoded', 'json']).should.equal('urlencoded');
     })
   })
+
+  describe('when Content-Type: multipart/form-data', function(){
+    it('should match "multipart/*"', function(){
+      var r = req('multipart/form-data');
+
+      is(r, ['multipart/*']).should.equal('multipart/form-data');
+    })
+
+    it('should match "multipart"', function(){
+      var r = req('multipart/form-data');
+
+      is(r, ['multipart']).should.equal('multipart');
+    })
+  })
 })
