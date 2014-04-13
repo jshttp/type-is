@@ -1,4 +1,68 @@
+
 var mime = require('mime');
+
+var slice = [].slice;
+
+module.exports = typeofrequest;
+typeofrequest.is = typeis;
+typeofrequest.hasBody = hasbody;
+typeofrequest.normalize = normalize;
+typeofrequest.match = mimeMatch;
+
+/**
+ * Compare a `value` content-type with `types`.
+ * Each `type` can be an extension like `html`,
+ * a special shortcut like `multipart` or `urlencoded`,
+ * or a mime type.
+ *
+ * If no types match, `false` is returned.
+ * Otherwise, the first `type` that matches is returned.
+ *
+ * @param {String} value
+ * @param {Array} types
+ * @return String
+ */
+
+function typeis(value, types) {
+  if (!value) return false;
+  if (types && !Array.isArray(types)) types = slice.call(arguments, 1);
+
+  // remove stuff like charsets
+  var index = value.indexOf(';')
+  value = ~index ? value.slice(0, index) : value
+
+  // no types, return the content type
+  if (!types || !types.length) return value;
+
+  var type;
+  for (var i = 0; i < types.length; i++)
+    if (mimeMatch(normalize(type = types[i]), value))
+      return ~type.indexOf('*') ? value : type;
+
+  // no matches
+  return false;
+}
+
+/**
+ * Check if a request has a request body.
+ * A request with a body __must__ either have `transfer-encoding`
+ * or `content-length` headers set.
+ * http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.3
+ *
+ * @param {Object} request
+ * @return {Boolean}
+ * @api public
+ */
+
+function hasbody(req) {
+  var headers = req.headers;
+  if ('transfer-encoding' in headers) return true;
+  var length = headers['content-length'];
+  if (!length) return false;
+  // no idea when this would happen, but `isNaN(null) === false`
+  if (isNaN(length)) return false;
+  return !!parseInt(length, 10);
+}
 
 /**
  * Check if the incoming request contains the "Content-Type"
@@ -26,30 +90,10 @@ var mime = require('mime');
  * @api public
  */
 
-module.exports = function (req, types) {
-  // no request body
-  var headers = req.headers
-  if (!(parseInt(headers['content-length'], 10)
-    || 'transfer-encoding' in headers)) return;
-
-  var ct = headers['content-type']
-  // no content-type
-  if (!ct) return false
-
-  // paramless
-  var index = ct.indexOf(';')
-  ct = ~index ? ct.slice(0, index) : ct
-
-  // no types, return the content type
-  if (!types || !types.length) return ct;
-
-  var type;
-  for (var i = 0; i < types.length; i++)
-    if (mimeMatch(normalize(type = types[i]), ct))
-      return ~type.indexOf('*') ? ct : type
-
-  // no matches
-  return false;
+function typeofrequest(req, types) {
+  if (!hasbody(req)) return null;
+  if (types && !Array.isArray(types)) types = slice.call(arguments, 1);
+  return typeis(req.headers['content-type'], types);
 }
 
 /**
@@ -91,13 +135,14 @@ function normalize(type) {
  */
 
 function mimeMatch(expected, actual) {
-  if (expected == actual) return true;
+  if (expected === actual) return true;
 
   if (!~expected.indexOf('*')) return false;
 
   actual = actual.split('/');
   expected = expected.split('/');
 
-  if ('*' == expected[0] && expected[1] == actual[1]) return true;
-  if ('*' == expected[1] && expected[0] == actual[0]) return true;
+  if ('*' === expected[0] && expected[1] === actual[1]) return true;
+  if ('*' === expected[1] && expected[0] === actual[0]) return true;
+  return false;
 }

@@ -18,6 +18,6 @@
     "should": "*"
   },
   "scripts": {
-    "test": "mocha --require should --reporter spec"
+    "test": "mocha --require should --reporter spec --bail"
   }
 }

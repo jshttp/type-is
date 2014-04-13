@@ -25,7 +25,7 @@ describe('is(req, type)', function(){
 
       assert(null == is(req));
       assert(null == is(req, ['image/*']));
-      assert(null == is(req, ['image/*', 'text/*']));
+      assert(null == is(req, 'image/*', 'text/*'));
     })
   })
 
@@ -66,11 +66,11 @@ describe('is(req, type)', function(){
       var r = req('image/png')
 
       is(r, ['png']).should.equal('png');
-      is(r, ['.png']).should.equal('.png');
+      is(r, '.png').should.equal('.png');
       is(r, ['text/*', 'image/*']).should.equal('image/png');
       is(r, ['image/*', 'text/*']).should.equal('image/png');
       is(r, ['image/*', 'image/png']).should.equal('image/png');
-      is(r, ['image/png', 'image/*']).should.equal('image/png');
+      is(r, 'image/png', 'image/*').should.equal('image/png');
 
       is(r, ['jpeg']).should.be.false;
       is(r, ['.jpeg']).should.be.false;
