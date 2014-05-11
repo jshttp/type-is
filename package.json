@@ -17,6 +17,9 @@
     "mocha": "*",
     "should": "*"
   },
+  "engines": {
+    "node": ">= 0.8"
+  },
   "scripts": {
     "test": "mocha --require should --reporter spec --bail"
   }
