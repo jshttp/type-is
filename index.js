@@ -35,9 +35,13 @@ function typeis(value, types) {
   if (!types || !types.length) return value;
 
   var type;
-  for (var i = 0; i < types.length; i++)
-    if (mimeMatch(normalize(type = types[i]), value))
-      return ~type.indexOf('*') ? value : type;
+  for (var i = 0; i < types.length; i++) {
+    if (mimeMatch(normalize(type = types[i]), value)) {
+      return type[0] === '+' || ~type.indexOf('*')
+        ? value
+        : type
+    }
+  }
 
   // no matches
   return false;
@@ -120,13 +124,15 @@ function normalize(type) {
       break;
   }
 
-  return ~type.indexOf('/') ? type : mime.lookup(type);
+  return type[0] === '+' || ~type.indexOf('/')
+    ? type
+    : mime.lookup(type)
 }
 
 /**
  * Check if `exected` mime type
  * matches `actual` mime type with
- * wildcard support.
+ * wildcard and +suffix support.
  *
  * @param {String} expected
  * @param {String} actual
@@ -137,12 +143,35 @@ function normalize(type) {
 function mimeMatch(expected, actual) {
   if (expected === actual) return true;
 
+  actual = actual.split('/');
+
+  if (expected[0] === '+') {
+    // support +suffix
+    return Boolean(actual[1])
+      && expected.length <= actual[1].length
+      && expected === actual[1].substr(0 - expected.length)
+  }
+
   if (!~expected.indexOf('*')) return false;
 
-  actual = actual.split('/');
   expected = expected.split('/');
 
-  if ('*' === expected[0] && expected[1] === actual[1]) return true;
-  if ('*' === expected[1] && expected[0] === actual[0]) return true;
-  return false;
+  if (expected[0] === '*') {
+    // support */yyy
+    return expected[1] === actual[1]
+  }
+
+  if (expected[1] === '*') {
+    // support xxx/*
+    return expected[0] === actual[0]
+  }
+
+  if (expected[1][0] === '*' && expected[1][1] === '+') {
+    // support xxx/*+zzz
+    return expected[0] === actual[0]
+      && expected[1].length <= actual[1].length + 1
+      && expected[1].substr(1) === actual[1].substr(1 - expected[1].length)
+  }
+
+  return false
 }

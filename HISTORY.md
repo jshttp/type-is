@@ -1,3 +1,11 @@
+unreleased
+==========
+
+ * support suffix matching:
+
+   - `+json` matches `application/vnd+json`
+   - `*/vnd+json` matches `application/vnd+json`
+   - `application/*+json` matches `application/vnd+json`
 
 1.1.0 / 2014-04-12
 ==================

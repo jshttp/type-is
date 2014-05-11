@@ -79,6 +79,19 @@ describe('is(req, type)', function(){
     })
   })
 
+  describe('given +suffix', function(){
+    it('should match suffix types', function(){
+      var r = req('application/vnd+json')
+
+      is(r, '+json').should.equal('application/vnd+json')
+      is(r, 'application/vnd+json').should.equal('application/vnd+json')
+      is(r, 'application/*+json').should.equal('application/vnd+json')
+      is(r, '*/vnd+json').should.equal('application/vnd+json')
+      is(r, 'application/json').should.be.false
+      is(r, 'text/*+json').should.be.false
+    })
+  })
+
   describe('when Content-Type: application/x-www-form-urlencoded', function(){
     it('should match "urlencoded"', function(){
       var r = req('application/x-www-form-urlencoded')
