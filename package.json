@@ -11,7 +11,7 @@
   "license": "MIT",
   "repository": "expressjs/type-is",
   "dependencies": {
-    "mime": "~1.2.11"
+    "mime": "1.2.11"
   },
   "devDependencies": {
     "mocha": "*",
