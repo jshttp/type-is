@@ -1,6 +1,6 @@
 {
   "name": "type-is",
-  "description": "Infer the content type if a request",
+  "description": "Infer the content-type of a request.",
   "version": "1.2.0",
   "author": {
     "name": "Jonathan Ong",
