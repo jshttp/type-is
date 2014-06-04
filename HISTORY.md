@@ -1,4 +1,5 @@
-HEAD
+
+1.2.1 / 2014-06-03
 ==================
 
 * Switch dependency from `mime` to `mime-types@1.0.0`
