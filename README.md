@@ -1,4 +1,7 @@
-# type-is [![Build Status](https://travis-ci.org/expressjs/type-is.svg?branch=master)](https://travis-ci.org/expressjs/type-is) [![NPM version](https://badge.fury.io/js/type-is.svg)](https://badge.fury.io/js/type-is)
+# type-is
+
+[![NPM version](https://badge.fury.io/js/type-is.svg)](https://badge.fury.io/js/type-is)
+[![Build Status](https://travis-ci.org/expressjs/type-is.svg?branch=master)](https://travis-ci.org/expressjs/type-is)
 
 Infer the content-type of a request.
 
