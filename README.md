@@ -18,7 +18,8 @@ var http = require('http')
 var is   = require('type-is')
 
 http.createServer(function (req, res) {
-  is(req, ['text/*'])
+  var istext = is(req, ['text/*'])
+  res.end('you ' + (istext ? 'sent' : 'did not send') + ' me text')
 })
 ```
 
