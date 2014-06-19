@@ -2,7 +2,7 @@
 var should = require('should');
 var assert = require('assert');
 
-var is = require('./')
+var is = require('..')
 
 function req(type) {
   return {

@@ -12,6 +12,7 @@
     "mime-types": "1.0.0"
   },
   "devDependencies": {
+    "istanbul": "0.2.10",
     "mocha": "*",
     "should": "*"
   },
@@ -19,6 +20,8 @@
     "node": ">= 0.8"
   },
   "scripts": {
-    "test": "mocha --require should --reporter spec --bail"
+    "test": "mocha --require should --reporter spec --bail test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot test/",
+    "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec test/"
   }
 }

@@ -2,6 +2,7 @@
 
 [![NPM version](https://badge.fury.io/js/type-is.svg)](https://badge.fury.io/js/type-is)
 [![Build Status](https://travis-ci.org/expressjs/type-is.svg?branch=master)](https://travis-ci.org/expressjs/type-is)
+[![Coverage Status](https://img.shields.io/coveralls/expressjs/type-is.svg?branch=master)](https://coveralls.io/r/expressjs/type-is)
 
 Infer the content-type of a request.
 
