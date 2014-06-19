@@ -2,8 +2,6 @@
 var typer = require('media-typer')
 var mime = require('mime-types')
 
-var slice = [].slice;
-
 module.exports = typeofrequest;
 typeofrequest.is = typeis;
 typeofrequest.hasBody = hasbody;
@@ -24,9 +22,19 @@ typeofrequest.match = mimeMatch;
  * @return String
  */
 
-function typeis(value, types) {
+function typeis(value, types_) {
+  var i
+  var types = types_
+
   if (!value) return false;
-  if (types && !Array.isArray(types)) types = slice.call(arguments, 1);
+
+  // support flattened arguments
+  if (types && !Array.isArray(types)) {
+    types = new Array(arguments.length - 1)
+    for (i = 0; i < types.length; i++) {
+      types[i] = arguments[i + 1]
+    }
+  }
 
   // remove parameters and normalize
   value = typenormalize(value)
@@ -39,7 +47,7 @@ function typeis(value, types) {
   // no types, return the content type
   if (!types || !types.length) return value;
 
-  for (var i = 0; i < types.length; i++) {
+  for (i = 0; i < types.length; i++) {
     if (mimeMatch(normalize(type = types[i]), value)) {
       return type[0] === '+' || ~type.indexOf('*')
         ? value
@@ -98,10 +106,26 @@ function hasbody(req) {
  * @api public
  */
 
-function typeofrequest(req, types) {
-  if (!hasbody(req)) return null;
-  if (types && !Array.isArray(types)) types = slice.call(arguments, 1);
-  return typeis(req.headers['content-type'], types);
+function typeofrequest(req, types_) {
+  var types = types_
+
+  // no body
+  if (!hasbody(req)) {
+    return null
+  }
+
+  // support flattened arguments
+  if (arguments.length > 2) {
+    types = new Array(arguments.length - 1)
+    for (var i = 0; i < types.length; i++) {
+      types[i] = arguments[i + 1]
+    }
+  }
+
+  // request content type
+  var value = req.headers['content-type']
+
+  return typeis(value, types);
 }
 
 /**
