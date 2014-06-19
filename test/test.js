@@ -60,6 +60,7 @@ describe('typeis(req, type)', function(){
       typeis(r, ['*/jpeg']).should.be.false;
 
       typeis(r, ['bogus']).should.be.false;
+      typeis(r, ['something/bogus*']).should.be.false;
     })
   })
 
