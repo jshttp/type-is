@@ -2,7 +2,7 @@
 var should = require('should');
 var assert = require('assert');
 
-var is = require('..')
+var typeis = require('..')
 
 function req(type) {
   return {
@@ -13,9 +13,9 @@ function req(type) {
   }
 }
 
-describe('is(req, type)', function(){
+describe('typeis(req, type)', function(){
   it('should ignore params', function(){
-    is(req('text/html; charset=utf-8'), ['text/*'])
+    typeis(req('text/html; charset=utf-8'), ['text/*'])
     .should.equal('text/html');
   })
 
@@ -23,23 +23,23 @@ describe('is(req, type)', function(){
     it('should return null', function(){
       var req = {headers: {}}
 
-      assert(null == is(req));
-      assert(null == is(req, ['image/*']));
-      assert(null == is(req, 'image/*', 'text/*'));
+      assert(null == typeis(req));
+      assert(null == typeis(req, ['image/*']));
+      assert(null == typeis(req, 'image/*', 'text/*'));
     })
   })
 
   describe('when no content type is given', function(){
     it('should return false', function(){
-      is(req()).should.be.false;
-      is(req(), ['image/*']).should.be.false;
-      is(req(), ['text/*', 'image/*']).should.be.false;
+      typeis(req()).should.be.false;
+      typeis(req(), ['image/*']).should.be.false;
+      typeis(req(), ['text/*', 'image/*']).should.be.false;
     })
   })
 
   describe('give no types', function(){
     it('should return the mime type', function(){
-      is(req('image/png')).should.equal('image/png');
+      typeis(req('image/png')).should.equal('image/png');
     })
   })
 
@@ -47,19 +47,19 @@ describe('is(req, type)', function(){
     it('should return the type or false', function(){
       var r = req('image/png')
 
-      is(r, ['png']).should.equal('png');
-      is(r, ['.png']).should.equal('.png');
-      is(r, ['image/png']).should.equal('image/png');
-      is(r, ['image/*']).should.equal('image/png');
-      is(r, ['*/png']).should.equal('image/png');
+      typeis(r, ['png']).should.equal('png');
+      typeis(r, ['.png']).should.equal('.png');
+      typeis(r, ['image/png']).should.equal('image/png');
+      typeis(r, ['image/*']).should.equal('image/png');
+      typeis(r, ['*/png']).should.equal('image/png');
 
-      is(r, ['jpeg']).should.be.false;
-      is(r, ['.jpeg']).should.be.false;
-      is(r, ['image/jpeg']).should.be.false;
-      is(r, ['text/*']).should.be.false;
-      is(r, ['*/jpeg']).should.be.false;
+      typeis(r, ['jpeg']).should.be.false;
+      typeis(r, ['.jpeg']).should.be.false;
+      typeis(r, ['image/jpeg']).should.be.false;
+      typeis(r, ['text/*']).should.be.false;
+      typeis(r, ['*/jpeg']).should.be.false;
 
-      is(r, ['bogus']).should.be.false;
+      typeis(r, ['bogus']).should.be.false;
     })
   })
 
@@ -67,17 +67,17 @@ describe('is(req, type)', function(){
     it('should return the first match or false', function(){
       var r = req('image/png')
 
-      is(r, ['png']).should.equal('png');
-      is(r, '.png').should.equal('.png');
-      is(r, ['text/*', 'image/*']).should.equal('image/png');
-      is(r, ['image/*', 'text/*']).should.equal('image/png');
-      is(r, ['image/*', 'image/png']).should.equal('image/png');
-      is(r, 'image/png', 'image/*').should.equal('image/png');
+      typeis(r, ['png']).should.equal('png');
+      typeis(r, '.png').should.equal('.png');
+      typeis(r, ['text/*', 'image/*']).should.equal('image/png');
+      typeis(r, ['image/*', 'text/*']).should.equal('image/png');
+      typeis(r, ['image/*', 'image/png']).should.equal('image/png');
+      typeis(r, 'image/png', 'image/*').should.equal('image/png');
 
-      is(r, ['jpeg']).should.be.false;
-      is(r, ['.jpeg']).should.be.false;
-      is(r, ['text/*', 'application/*']).should.be.false;
-      is(r, ['text/html', 'text/plain', 'application/json']).should.be.false;
+      typeis(r, ['jpeg']).should.be.false;
+      typeis(r, ['.jpeg']).should.be.false;
+      typeis(r, ['text/*', 'application/*']).should.be.false;
+      typeis(r, ['text/html', 'text/plain', 'application/json']).should.be.false;
     })
   })
 
@@ -85,12 +85,12 @@ describe('is(req, type)', function(){
     it('should match suffix types', function(){
       var r = req('application/vnd+json')
 
-      is(r, '+json').should.equal('application/vnd+json')
-      is(r, 'application/vnd+json').should.equal('application/vnd+json')
-      is(r, 'application/*+json').should.equal('application/vnd+json')
-      is(r, '*/vnd+json').should.equal('application/vnd+json')
-      is(r, 'application/json').should.be.false
-      is(r, 'text/*+json').should.be.false
+      typeis(r, '+json').should.equal('application/vnd+json')
+      typeis(r, 'application/vnd+json').should.equal('application/vnd+json')
+      typeis(r, 'application/*+json').should.equal('application/vnd+json')
+      typeis(r, '*/vnd+json').should.equal('application/vnd+json')
+      typeis(r, 'application/json').should.be.false
+      typeis(r, 'text/*+json').should.be.false
     })
   })
 
@@ -98,9 +98,9 @@ describe('is(req, type)', function(){
     it('should match "urlencoded"', function(){
       var r = req('application/x-www-form-urlencoded')
 
-      is(r, ['urlencoded']).should.equal('urlencoded');
-      is(r, ['json', 'urlencoded']).should.equal('urlencoded');
-      is(r, ['urlencoded', 'json']).should.equal('urlencoded');
+      typeis(r, ['urlencoded']).should.equal('urlencoded');
+      typeis(r, ['json', 'urlencoded']).should.equal('urlencoded');
+      typeis(r, ['urlencoded', 'json']).should.equal('urlencoded');
     })
   })
 
@@ -108,13 +108,13 @@ describe('is(req, type)', function(){
     it('should match "multipart/*"', function(){
       var r = req('multipart/form-data');
 
-      is(r, ['multipart/*']).should.equal('multipart/form-data');
+      typeis(r, ['multipart/*']).should.equal('multipart/form-data');
     })
 
     it('should match "multipart"', function(){
       var r = req('multipart/form-data');
 
-      is(r, ['multipart']).should.equal('multipart');
+      typeis(r, ['multipart']).should.equal('multipart');
     })
   })
 })
