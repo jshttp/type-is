@@ -118,3 +118,29 @@ describe('typeis(req, type)', function(){
     })
   })
 })
+
+describe('typeis.hasBody(req)', function(){
+  describe('content-length', function(){
+    it('should indicate body', function(){
+      var req = {headers: {'content-length': '1'}}
+      typeis.hasBody(req).should.be.true
+    })
+
+    it('should be false when 0', function(){
+      var req = {headers: {'content-length': '0'}}
+      typeis.hasBody(req).should.be.false
+    })
+
+    it('should be false when bogus', function(){
+      var req = {headers: {'content-length': 'bogus'}}
+      typeis.hasBody(req).should.be.false
+    })
+  })
+
+  describe('transfer-encoding', function(){
+    it('should indicate body', function(){
+      var req = {headers: {'transfer-encoding': 'chunked'}}
+      typeis.hasBody(req).should.be.true
+    })
+  })
+})
