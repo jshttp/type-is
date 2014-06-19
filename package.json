@@ -9,6 +9,7 @@
   "license": "MIT",
   "repository": "expressjs/type-is",
   "dependencies": {
+    "media-typer": "0.2.0",
     "mime-types": "1.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 
-var mime = require('mime-types');
+var typer = require('media-typer')
+var mime = require('mime-types')
 
 var slice = [].slice;
 
@@ -27,14 +28,17 @@ function typeis(value, types) {
   if (!value) return false;
   if (types && !Array.isArray(types)) types = slice.call(arguments, 1);
 
-  // remove stuff like charsets
-  var index = value.indexOf(';')
-  value = ~index ? value.slice(0, index) : value
+  // remove parameters and normalize
+  value = typenormalize(value)
+
+  // no type or invalid
+  if (!value) {
+    return false
+  }
 
   // no types, return the content type
   if (!types || !types.length) return value;
 
-  var type;
   for (var i = 0; i < types.length; i++) {
     if (mimeMatch(normalize(type = types[i]), value)) {
       return type[0] === '+' || ~type.indexOf('*')
@@ -182,4 +186,22 @@ function mimeMatch(expected, actual) {
   }
 
   return false
+}
+
+/**
+ * Normalize a type and remove parameters.
+ *
+ * @param {string} value
+ * @return {string}
+ * @api private
+ */
+
+function typenormalize(value) {
+  try {
+    var type = typer.parse(value)
+    delete type.parameters
+    return typer.format(type)
+  } catch (err) {
+    return null
+  }
 }

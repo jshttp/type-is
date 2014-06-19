@@ -1,3 +1,12 @@
+unreleased
+==========
+
+ * improve type parsing
+
+   - invalid media type never matches
+   - media type not case-sensitive
+   - extra LWS does not affect results
+
 1.2.2 / 2014-06-19
 ==================
 

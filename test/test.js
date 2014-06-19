@@ -19,6 +19,21 @@ describe('typeis(req, type)', function(){
     .should.equal('text/html');
   })
 
+  it('should ignore params LWS', function(){
+    typeis(req('text/html ; charset=utf-8'), ['text/*'])
+    .should.equal('text/html')
+  })
+
+  it('should ignore casing', function(){
+    typeis(req('text/HTML'), ['text/*'])
+    .should.equal('text/html')
+  })
+
+  it('should fail invalid type', function(){
+    typeis(req('text/html**'), ['text/*'])
+    .should.be.false
+  })
+
   describe('when no body is given', function(){
     it('should return null', function(){
       var req = {headers: {}}
