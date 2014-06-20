@@ -1,8 +1,12 @@
+unreleased
+==========
+
+ * fix behavior on unknown type argument
 
 1.2.1 / 2014-06-03
 ==================
 
-* Switch dependency from `mime` to `mime-types@1.0.0`
+ * switch dependency from `mime` to `mime-types@1.0.0`
 
 1.2.0 / 2014-05-11
 ==================

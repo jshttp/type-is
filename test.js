@@ -58,6 +58,8 @@ describe('is(req, type)', function(){
       is(r, ['image/jpeg']).should.be.false;
       is(r, ['text/*']).should.be.false;
       is(r, ['*/jpeg']).should.be.false;
+
+      is(r, ['bogus']).should.be.false;
     })
   })
 

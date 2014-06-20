@@ -141,7 +141,15 @@ function normalize(type) {
  */
 
 function mimeMatch(expected, actual) {
-  if (expected === actual) return true;
+  // invalid type
+  if (expected === false) {
+    return false
+  }
+
+  // exact match
+  if (expected === actual) {
+    return true
+  }
 
   actual = actual.split('/');
 
