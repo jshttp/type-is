@@ -1,5 +1,5 @@
-unreleased
-==========
+1.3.0 / 2014-06-19
+==================
 
  * improve type parsing
 
