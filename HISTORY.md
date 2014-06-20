@@ -1,5 +1,5 @@
-unreleased
-==========
+1.2.2 / 2014-06-19
+==================
 
  * fix behavior on unknown type argument
 
