@@ -26,7 +26,13 @@ function typeis(value, types_) {
   var i
   var types = types_
 
-  if (!value) return false;
+  // remove parameters and normalize
+  value = typenormalize(value)
+
+  // no type or invalid
+  if (!value) {
+    return false
+  }
 
   // support flattened arguments
   if (types && !Array.isArray(types)) {
@@ -34,14 +40,6 @@ function typeis(value, types_) {
     for (i = 0; i < types.length; i++) {
       types[i] = arguments[i + 1]
     }
-  }
-
-  // remove parameters and normalize
-  value = typenormalize(value)
-
-  // no type or invalid
-  if (!value) {
-    return false
   }
 
   // no types, return the content type
