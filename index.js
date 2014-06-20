@@ -45,6 +45,7 @@ function typeis(value, types_) {
   // no types, return the content type
   if (!types || !types.length) return value;
 
+  var type
   for (i = 0; i < types.length; i++) {
     if (mimeMatch(normalize(type = types[i]), value)) {
       return type[0] === '+' || ~type.indexOf('*')

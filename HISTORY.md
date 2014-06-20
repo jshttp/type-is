@@ -1,3 +1,8 @@
+unreleased
+==========
+
+ * fix global variable leak
+
 1.3.0 / 2014-06-19
 ==================
 
