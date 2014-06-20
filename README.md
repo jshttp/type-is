@@ -58,9 +58,7 @@ var parse = require('body');
 var busboy = require('busboy');
 
 function bodyParser(req, res, next) {
-  var hasRequestBody = 'content-type' in req.headers
-    || 'transfer-encoding' in req.headers;
-  if (!hasRequestBody) return next();
+  if (!is.hasBody(req)) return next();
 
   switch (is(req, ['urlencoded', 'json', 'multipart'])) {
     case 'urlencoded':
