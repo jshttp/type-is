@@ -7,7 +7,7 @@
     "Douglas Christopher Wilson <doug@somethingdoug.com>"
   ],
   "license": "MIT",
-  "repository": "expressjs/type-is",
+  "repository": "jshttp/type-is",
   "dependencies": {
     "media-typer": "0.2.0",
     "mime-types": "~2.0.0"
