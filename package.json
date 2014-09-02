@@ -13,9 +13,9 @@
     "mime-types": "~1.0.1"
   },
   "devDependencies": {
-    "istanbul": "0.2.11",
-    "mocha": "*",
-    "should": "*"
+    "istanbul": "~0.3.0",
+    "mocha": "1",
+    "should": "4"
   },
   "engines": {
     "node": ">= 0.8"
@@ -24,5 +24,11 @@
     "test": "mocha --require should --reporter spec --check-leaks --bail test/",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
     "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
-  }
+  },
+  "files": ["index.js"],
+  "keywords": [
+    "content",
+    "type",
+    "checking"
+  ]
 }
