@@ -1,5 +1,5 @@
-unreleased
-==========
+1.5.0 / 2014-09-05
+==================
 
  * fix `hasbody` to be true for `content-length: 0`
 
