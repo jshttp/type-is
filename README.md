@@ -1,11 +1,10 @@
 # type-is
 
-[![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
-[![Dependency Status][david-image]][david-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Node.js Version][node-version-image]][node-version-url]
+[![Build Status][travis-image]][travis-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
 
 Infer the content-type of a request.
 
@@ -79,15 +78,13 @@ function bodyParser(req, res, next) {
 }
 ```
 
-[npm-image]: https://img.shields.io/npm/v/type-is.svg?style=flat-square
+[npm-image]: https://img.shields.io/npm/v/type-is.svg?style=flat
 [npm-url]: https://npmjs.org/package/type-is
-[travis-image]: https://img.shields.io/travis/jshttp/type-is.svg?style=flat-square
+[node-version-image]: https://img.shields.io/badge/node.js-%3E%3D_0.8-brightgreen.svg?style=flat
+[node-version-url]: http://nodejs.org/download/
+[travis-image]: https://img.shields.io/travis/jshttp/type-is.svg?style=flat
 [travis-url]: https://travis-ci.org/jshttp/type-is
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/type-is.svg?style=flat-square
+[coveralls-image]: https://img.shields.io/coveralls/jshttp/type-is.svg?style=flat
 [coveralls-url]: https://coveralls.io/r/jshttp/type-is?branch=master
-[david-image]: http://img.shields.io/david/jshttp/type-is.svg?style=flat-square
-[david-url]: https://david-dm.org/jshttp/type-is
-[license-image]: http://img.shields.io/npm/l/type-is.svg?style=flat-square
-[license-url]: LICENSE
-[downloads-image]: http://img.shields.io/npm/dm/type-is.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/type-is.svg?style=flat
 [downloads-url]: https://npmjs.org/package/type-is
