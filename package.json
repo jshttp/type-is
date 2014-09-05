@@ -20,12 +20,16 @@
   "engines": {
     "node": ">= 0.8"
   },
+  "files": [
+    "LICENSE",
+    "HISTORY.md",
+    "index.js"
+  ],
   "scripts": {
     "test": "mocha --require should --reporter spec --check-leaks --bail test/",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
     "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
   },
-  "files": ["index.js"],
   "keywords": [
     "content",
     "type",
