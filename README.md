@@ -56,23 +56,30 @@ is(req, ['html']) // false
 
 ```js
 var is = require('type-is');
-var parse = require('body');
 
 function bodyParser(req, res, next) {
-  if (!is.hasBody(req)) return next();
+  if (!is.hasBody(req)) {
+    return next()
+  }
 
   switch (is(req, ['urlencoded', 'json', 'multipart'])) {
     case 'urlencoded':
       // parse urlencoded body
+      throw new Error('implement urlencoded body parsing')
       break
     case 'json':
       // parse json body
+      throw new Error('implement json body parsing')
       break
     case 'multipart':
       // parse multipart body
+      throw new Error('implement multipart body parsing')
       break
     default:
       // 415 error code
+      res.statusCode = 415
+      res.end()
+      return
   }
 }
 ```
