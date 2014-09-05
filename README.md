@@ -57,7 +57,6 @@ is(req, ['html']) // false
 ```js
 var is = require('type-is');
 var parse = require('body');
-var busboy = require('busboy');
 
 function bodyParser(req, res, next) {
   if (!is.hasBody(req)) return next();
