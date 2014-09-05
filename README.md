@@ -78,6 +78,10 @@ function bodyParser(req, res, next) {
 }
 ```
 
+## License
+
+[MIT](LICENSE)
+
 [npm-image]: https://img.shields.io/npm/v/type-is.svg?style=flat
 [npm-url]: https://npmjs.org/package/type-is
 [node-version-image]: https://img.shields.io/badge/node.js-%3E%3D_0.8-brightgreen.svg?style=flat
