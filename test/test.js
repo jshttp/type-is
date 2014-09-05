@@ -142,9 +142,9 @@ describe('typeis.hasBody(req)', function(){
       typeis.hasBody(req).should.be.true
     })
 
-    it('should be false when 0', function(){
+    it('should be true when 0', function(){
       var req = {headers: {'content-length': '0'}}
-      typeis.hasBody(req).should.be.false
+      typeis.hasBody(req).should.be.true
     })
 
     it('should be false when bogus', function(){
