@@ -1,37 +1,26 @@
 
-var should = require('should');
-var assert = require('assert');
-
+var assert = require('assert')
 var typeis = require('..')
-
-function req(type) {
-  return {
-    headers: {
-      'content-type': type || '',
-      'transfer-encoding': 'chunked'
-    }
-  }
-}
 
 describe('typeis(req, type)', function(){
   it('should ignore params', function(){
-    typeis(req('text/html; charset=utf-8'), ['text/*'])
-    .should.equal('text/html');
+    var req = createRequest('text/html; charset=utf-8')
+    assert.equal(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should ignore params LWS', function(){
-    typeis(req('text/html ; charset=utf-8'), ['text/*'])
-    .should.equal('text/html')
+    var req = createRequest('text/html ; charset=utf-8')
+    assert.equal(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should ignore casing', function(){
-    typeis(req('text/HTML'), ['text/*'])
-    .should.equal('text/html')
+    var req = createRequest('text/HTML')
+    assert.equal(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should fail invalid type', function(){
-    typeis(req('text/html**'), ['text/*'])
-    .should.be.false
+    var req = createRequest('text/html**')
+    assert.strictEqual(typeis(req, ['text/*']), false)
   })
 
   describe('when no body is given', function(){
@@ -46,91 +35,93 @@ describe('typeis(req, type)', function(){
 
   describe('when no content type is given', function(){
     it('should return false', function(){
-      typeis(req()).should.be.false;
-      typeis(req(), ['image/*']).should.be.false;
-      typeis(req(), ['text/*', 'image/*']).should.be.false;
+      var req = createRequest()
+      assert.strictEqual(typeis(req), false)
+      assert.strictEqual(typeis(req, ['image/*']), false)
+      assert.strictEqual(typeis(req, ['text/*', 'image/*']), false)
     })
   })
 
   describe('give no types', function(){
     it('should return the mime type', function(){
-      typeis(req('image/png')).should.equal('image/png');
+      var req = createRequest('image/png')
+      assert.equal(typeis(req), 'image/png')
     })
   })
 
   describe('given one type', function(){
     it('should return the type or false', function(){
-      var r = req('image/png')
+      var req = createRequest('image/png')
 
-      typeis(r, ['png']).should.equal('png');
-      typeis(r, ['.png']).should.equal('.png');
-      typeis(r, ['image/png']).should.equal('image/png');
-      typeis(r, ['image/*']).should.equal('image/png');
-      typeis(r, ['*/png']).should.equal('image/png');
+      assert.equal(typeis(req, ['png']), 'png')
+      assert.equal(typeis(req, ['.png']), '.png')
+      assert.equal(typeis(req, ['image/png']), 'image/png')
+      assert.equal(typeis(req, ['image/*']), 'image/png')
+      assert.equal(typeis(req, ['*/png']), 'image/png')
 
-      typeis(r, ['jpeg']).should.be.false;
-      typeis(r, ['.jpeg']).should.be.false;
-      typeis(r, ['image/jpeg']).should.be.false;
-      typeis(r, ['text/*']).should.be.false;
-      typeis(r, ['*/jpeg']).should.be.false;
+      assert.strictEqual(typeis(req, ['jpeg']), false)
+      assert.strictEqual(typeis(req, ['.jpeg']), false)
+      assert.strictEqual(typeis(req, ['image/jpeg']), false)
+      assert.strictEqual(typeis(req, ['text/*']), false)
+      assert.strictEqual(typeis(req, ['*/jpeg']), false)
 
-      typeis(r, ['bogus']).should.be.false;
-      typeis(r, ['something/bogus*']).should.be.false;
+      assert.strictEqual(typeis(req, ['bogus']), false)
+      assert.strictEqual(typeis(req, ['something/bogus*']), false)
     })
   })
 
   describe('given multiple types', function(){
     it('should return the first match or false', function(){
-      var r = req('image/png')
+      var req = createRequest('image/png')
 
-      typeis(r, ['png']).should.equal('png');
-      typeis(r, '.png').should.equal('.png');
-      typeis(r, ['text/*', 'image/*']).should.equal('image/png');
-      typeis(r, ['image/*', 'text/*']).should.equal('image/png');
-      typeis(r, ['image/*', 'image/png']).should.equal('image/png');
-      typeis(r, 'image/png', 'image/*').should.equal('image/png');
+      assert.equal(typeis(req, ['png']), 'png')
+      assert.equal(typeis(req, '.png'), '.png')
+      assert.equal(typeis(req, ['text/*', 'image/*']), 'image/png')
+      assert.equal(typeis(req, ['image/*', 'text/*']), 'image/png')
+      assert.equal(typeis(req, ['image/*', 'image/png']), 'image/png')
+      assert.equal(typeis(req, 'image/png', 'image/*'), 'image/png')
 
-      typeis(r, ['jpeg']).should.be.false;
-      typeis(r, ['.jpeg']).should.be.false;
-      typeis(r, ['text/*', 'application/*']).should.be.false;
-      typeis(r, ['text/html', 'text/plain', 'application/json']).should.be.false;
+      assert.strictEqual(typeis(req, ['jpeg']), false)
+      assert.strictEqual(typeis(req, ['.jpeg']), false)
+      assert.strictEqual(typeis(req, ['text/*', 'application/*']), false)
+      assert.strictEqual(typeis(req, ['text/html', 'text/plain', 'application/json']), false)
     })
   })
 
   describe('given +suffix', function(){
     it('should match suffix types', function(){
-      var r = req('application/vnd+json')
+      var req = createRequest('application/vnd+json')
 
-      typeis(r, '+json').should.equal('application/vnd+json')
-      typeis(r, 'application/vnd+json').should.equal('application/vnd+json')
-      typeis(r, 'application/*+json').should.equal('application/vnd+json')
-      typeis(r, '*/vnd+json').should.equal('application/vnd+json')
-      typeis(r, 'application/json').should.be.false
-      typeis(r, 'text/*+json').should.be.false
+      assert.equal(typeis(req, '+json'), 'application/vnd+json')
+      assert.equal(typeis(req, 'application/vnd+json'), 'application/vnd+json')
+      assert.equal(typeis(req, 'application/*+json'), 'application/vnd+json')
+      assert.equal(typeis(req, '*/vnd+json'), 'application/vnd+json')
+      assert.strictEqual(typeis(req, 'application/json'), false)
+      assert.strictEqual(typeis(req, 'text/*+json'), false)
     })
   })
 
   describe('when Content-Type: application/x-www-form-urlencoded', function(){
     it('should match "urlencoded"', function(){
-      var r = req('application/x-www-form-urlencoded')
+      var req = createRequest('application/x-www-form-urlencoded')
 
-      typeis(r, ['urlencoded']).should.equal('urlencoded');
-      typeis(r, ['json', 'urlencoded']).should.equal('urlencoded');
-      typeis(r, ['urlencoded', 'json']).should.equal('urlencoded');
+      assert.equal(typeis(req, ['urlencoded']), 'urlencoded')
+      assert.equal(typeis(req, ['json', 'urlencoded']), 'urlencoded')
+      assert.equal(typeis(req, ['urlencoded', 'json']), 'urlencoded')
     })
   })
 
   describe('when Content-Type: multipart/form-data', function(){
     it('should match "multipart/*"', function(){
-      var r = req('multipart/form-data');
+      var req = createRequest('multipart/form-data');
 
-      typeis(r, ['multipart/*']).should.equal('multipart/form-data');
+      assert.equal(typeis(req, ['multipart/*']), 'multipart/form-data')
     })
 
     it('should match "multipart"', function(){
-      var r = req('multipart/form-data');
+      var req = createRequest('multipart/form-data');
 
-      typeis(r, ['multipart']).should.equal('multipart');
+      assert.equal(typeis(req, ['multipart']), 'multipart')
     })
   })
 })
@@ -139,24 +130,33 @@ describe('typeis.hasBody(req)', function(){
   describe('content-length', function(){
     it('should indicate body', function(){
       var req = {headers: {'content-length': '1'}}
-      typeis.hasBody(req).should.be.true
+      assert.strictEqual(typeis.hasBody(req), true)
     })
 
     it('should be true when 0', function(){
       var req = {headers: {'content-length': '0'}}
-      typeis.hasBody(req).should.be.true
+      assert.strictEqual(typeis.hasBody(req), true)
     })
 
     it('should be false when bogus', function(){
       var req = {headers: {'content-length': 'bogus'}}
-      typeis.hasBody(req).should.be.false
+      assert.strictEqual(typeis.hasBody(req), false)
     })
   })
 
   describe('transfer-encoding', function(){
     it('should indicate body', function(){
       var req = {headers: {'transfer-encoding': 'chunked'}}
-      typeis.hasBody(req).should.be.true
+      assert.strictEqual(typeis.hasBody(req), true)
     })
   })
 })
+
+function createRequest(type) {
+  return {
+    headers: {
+      'content-type': type || '',
+      'transfer-encoding': 'chunked'
+    }
+  }
+}
