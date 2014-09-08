@@ -10,7 +10,7 @@
   "repository": "jshttp/type-is",
   "dependencies": {
     "media-typer": "0.2.0",
-    "mime-types": "~2.0.0"
+    "mime-types": "~2.0.1"
   },
   "devDependencies": {
     "istanbul": "~0.3.0",
