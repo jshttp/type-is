@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * Support Node.js 0.6
   * deps: media-typer@0.3.0
   * deps: mime-types@~2.0.1
     - Support Node.js 0.6
