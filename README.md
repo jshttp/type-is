@@ -65,6 +65,8 @@ is.is(mediaType, ['html']) // false
 
 `false` will be returned if no type matches.
 
+`null` will be returned if the request does not have a body.
+
 ## Examples
 
 #### Example body parser
