@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * fix false-positives in `hasBody` `Transfer-Encoding` check
   * support wildcard for both type and subtype (`*/*`)
 
 1.5.7 / 2015-02-09

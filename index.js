@@ -72,9 +72,8 @@ function typeis(value, types_) {
  */
 
 function hasbody(req) {
-  var headers = req.headers;
-  if ('transfer-encoding' in headers) return true;
-  return !isNaN(headers['content-length']);
+  return req.headers['transfer-encoding'] !== undefined
+    || !isNaN(req.headers['content-length'])
 }
 
 /**
