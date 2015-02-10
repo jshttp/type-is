@@ -101,6 +101,24 @@ describe('typeis(req, type)', function(){
     })
   })
 
+  describe('given "*/*"', function () {
+    it('should match any content-type', function () {
+      assert.equal(typeis(createRequest('text/html'), '*/*'), 'text/html')
+      assert.equal(typeis(createRequest('text/xml'), '*/*'), 'text/xml')
+      assert.equal(typeis(createRequest('application/json'), '*/*'), 'application/json')
+      assert.equal(typeis(createRequest('application/vnd+json'), '*/*'), 'application/vnd+json')
+    })
+
+    it('should not match invalid content-type', function () {
+      assert.strictEqual(typeis(createRequest('bogus'), '*/*'), false)
+    })
+
+    it('should not match body-less request', function () {
+      var req = {headers: {'content-type': 'text/html'}}
+      assert.strictEqual(typeis(req, '*/*'), null)
+    })
+  })
+
   describe('when Content-Type: application/x-www-form-urlencoded', function(){
     it('should match "urlencoded"', function(){
       var req = createRequest('application/x-www-form-urlencoded')

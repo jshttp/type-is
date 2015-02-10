@@ -60,7 +60,7 @@ is.is(mediaType, ['html']) // false
 
 - An extension name such as `json`. This name will be returned if matched.
 - A mime type such as `application/json`.
-- A mime type with a wildcard such as `*/json` or `application/*`. The full mime type will be returned if matched
+- A mime type with a wildcard such as `*/*` or `*/json` or `application/*`. The full mime type will be returned if matched.
 - A suffix such as `+json`. This can be combined with a wildcard such as `*/vnd+json` or `application/*+json`. The full mime type will be returned if matched.
 
 `false` will be returned if no type matches.

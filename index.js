@@ -143,15 +143,22 @@ function typeofrequest(req, types_) {
 
 function normalize(type) {
   switch (type) {
-    case 'urlencoded': return 'application/x-www-form-urlencoded';
+    case 'urlencoded':
+      type = 'application/x-www-form-urlencoded'
+      break
     case 'multipart':
-      type = 'multipart/*';
-      break;
+      type = 'multipart/*'
+      break
   }
 
-  return type[0] === '+' || ~type.indexOf('/')
-    ? type
-    : mime.lookup(type)
+  if (type[0] === '+') {
+    // "+json" -> "*/*+json" expando
+    type = '*/*' + type
+  }
+
+  return type.indexOf('/') === -1
+    ? mime.lookup(type)
+    : type
 }
 
 /**
@@ -171,42 +178,32 @@ function mimeMatch(expected, actual) {
     return false
   }
 
-  // exact match
-  if (expected === actual) {
-    return true
+  // split types
+  var actualParts = actual.split('/')
+  var expectedParts = expected.split('/')
+
+  // invalid format
+  if (actualParts.length !== 2 || expectedParts.length !== 2) {
+    return false
   }
 
-  actual = actual.split('/');
-
-  if (expected[0] === '+') {
-    // support +suffix
-    return Boolean(actual[1])
-      && expected.length <= actual[1].length
-      && expected === actual[1].substr(0 - expected.length)
+  // validate type
+  if (expectedParts[0] !== '*' && expectedParts[0] !== actualParts[0]) {
+    return false
   }
 
-  if (!~expected.indexOf('*')) return false;
-
-  expected = expected.split('/');
-
-  if (expected[0] === '*') {
-    // support */yyy
-    return expected[1] === actual[1]
+  // validate suffix wildcard
+  if (expectedParts[1].substr(0, 2) === '*+') {
+    return expectedParts[1].length <= actualParts[1].length + 1
+      && expectedParts[1].substr(1) === actualParts[1].substr(1 - expectedParts[1].length)
   }
 
-  if (expected[1] === '*') {
-    // support xxx/*
-    return expected[0] === actual[0]
+  // validate subtype
+  if (expectedParts[1] !== '*' && expectedParts[1] !== actualParts[1]) {
+    return false
   }
 
-  if (expected[1][0] === '*' && expected[1][1] === '+') {
-    // support xxx/*+zzz
-    return expected[0] === actual[0]
-      && expected[1].length <= actual[1].length + 1
-      && expected[1].substr(1) === actual[1].substr(1 - expected[1].length)
-  }
-
-  return false
+  return true
 }
 
 /**
