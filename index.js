@@ -27,10 +27,10 @@ function typeis(value, types_) {
   var types = types_
 
   // remove parameters and normalize
-  value = typenormalize(value)
+  var val = typenormalize(value)
 
   // no type or invalid
-  if (!value) {
+  if (!val) {
     return false
   }
 
@@ -43,13 +43,15 @@ function typeis(value, types_) {
   }
 
   // no types, return the content type
-  if (!types || !types.length) return value;
+  if (!types || !types.length) {
+    return val
+  }
 
   var type
   for (i = 0; i < types.length; i++) {
-    if (mimeMatch(normalize(type = types[i]), value)) {
+    if (mimeMatch(normalize(type = types[i]), val)) {
       return type[0] === '+' || ~type.indexOf('*')
-        ? value
+        ? val
         : type
     }
   }

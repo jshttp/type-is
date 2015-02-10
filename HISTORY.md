@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * fix argument reassignment
   * deps: mime-types@~2.0.9
     - Add new mime types
 
