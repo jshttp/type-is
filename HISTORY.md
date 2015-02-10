@@ -1,5 +1,5 @@
-unreleased
-==========
+1.5.7 / 2015-02-09
+==================
 
   * fix argument reassignment
   * deps: mime-types@~2.0.9
