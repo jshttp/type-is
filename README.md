@@ -105,13 +105,13 @@ function bodyParser(req, res, next) {
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/type-is.svg?style=flat
+[npm-image]: https://img.shields.io/npm/v/type-is.svg
 [npm-url]: https://npmjs.org/package/type-is
-[node-version-image]: https://img.shields.io/node/v/type-is.svg?style=flat
+[node-version-image]: https://img.shields.io/node/v/type-is.svg
 [node-version-url]: http://nodejs.org/download/
-[travis-image]: https://img.shields.io/travis/jshttp/type-is.svg?style=flat
+[travis-image]: https://img.shields.io/travis/jshttp/type-is/master.svg
 [travis-url]: https://travis-ci.org/jshttp/type-is
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/type-is.svg?style=flat
+[coveralls-image]: https://img.shields.io/coveralls/jshttp/type-is/master.svg
 [coveralls-url]: https://coveralls.io/r/jshttp/type-is?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/type-is.svg?style=flat
+[downloads-image]: https://img.shields.io/npm/dm/type-is.svg
 [downloads-url]: https://npmjs.org/package/type-is
