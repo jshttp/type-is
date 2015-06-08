@@ -56,7 +56,7 @@ function typeis(value, types_) {
   var type
   for (i = 0; i < types.length; i++) {
     if (mimeMatch(normalize(type = types[i]), val)) {
-      return type[0] === '+' || ~type.indexOf('*')
+      return type[0] === '+' || type.indexOf('*') !== -1
         ? val
         : type
     }

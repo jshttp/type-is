@@ -4,6 +4,7 @@ unreleased
   * deps: mime-types@~2.1.1
     - Add new mime types
   * perf: reduce try block size
+  * perf: remove bitwise operations
 
 1.6.2 / 2015-05-10
 ==================
