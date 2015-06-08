@@ -3,6 +3,7 @@ unreleased
 
   * deps: mime-types@~2.0.12
     - Add new mime types
+  * perf: reduce try block size
 
 1.6.2 / 2015-05-10
 ==================

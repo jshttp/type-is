@@ -33,7 +33,7 @@ function typeis(value, types_) {
   var types = types_
 
   // remove parameters and normalize
-  var val = typenormalize(value)
+  var val = tryNormalizeType(value)
 
   // no type or invalid
   if (!val) {
@@ -216,14 +216,31 @@ function mimeMatch(expected, actual) {
  *
  * @param {string} value
  * @return {string}
- * @api private
+ * @private
  */
 
-function typenormalize(value) {
+function normalizeType(value) {
+  // parse the type
+  var type = typer.parse(value)
+
+  // remove the parameters
+  type.parameters = undefined
+
+  // reformat it
+  return typer.format(type)
+}
+
+/**
+ * Try to normalize a type and remove parameters.
+ *
+ * @param {string} value
+ * @return {string}
+ * @private
+ */
+
+function tryNormalizeType(value) {
   try {
-    var type = typer.parse(value)
-    delete type.parameters
-    return typer.format(type)
+    return normalizeType(value)
   } catch (err) {
     return null
   }
