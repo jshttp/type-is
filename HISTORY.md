@@ -1,7 +1,7 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.0.12
+  * deps: mime-types@~2.1.1
     - Add new mime types
   * perf: reduce try block size
 
