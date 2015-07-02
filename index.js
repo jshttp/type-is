@@ -5,14 +5,24 @@
  * MIT Licensed
  */
 
+/**
+ * Module dependencies.
+ * @private
+ */
+
 var typer = require('media-typer')
 var mime = require('mime-types')
 
-module.exports = typeofrequest;
-typeofrequest.is = typeis;
-typeofrequest.hasBody = hasbody;
-typeofrequest.normalize = normalize;
-typeofrequest.match = mimeMatch;
+/**
+ * Module exports.
+ * @public
+ */
+
+module.exports = typeofrequest
+module.exports.is = typeis
+module.exports.hasBody = hasbody
+module.exports.normalize = normalize
+module.exports.match = mimeMatch
 
 /**
  * Compare a `value` content-type with `types`.
@@ -25,7 +35,7 @@ typeofrequest.match = mimeMatch;
  *
  * @param {String} value
  * @param {Array} types
- * @return String
+ * @public
  */
 
 function typeis(value, types_) {
@@ -63,7 +73,7 @@ function typeis(value, types_) {
   }
 
   // no matches
-  return false;
+  return false
 }
 
 /**
@@ -74,7 +84,7 @@ function typeis(value, types_) {
  *
  * @param {Object} request
  * @return {Boolean}
- * @api public
+ * @public
  */
 
 function hasbody(req) {
@@ -105,7 +115,7 @@ function hasbody(req) {
  *
  * @param {String|Array} types...
  * @return {String|false|null}
- * @api public
+ * @public
  */
 
 function typeofrequest(req, types_) {
@@ -127,7 +137,7 @@ function typeofrequest(req, types_) {
   // request content type
   var value = req.headers['content-type']
 
-  return typeis(value, types);
+  return typeis(value, types)
 }
 
 /**
@@ -143,7 +153,7 @@ function typeofrequest(req, types_) {
  * and are thus ensured to work.
  *
  * @param {String} type
- * @api private
+ * @private
  */
 
 function normalize(type) {
@@ -174,7 +184,7 @@ function normalize(type) {
  * @param {String} expected
  * @param {String} actual
  * @return {Boolean}
- * @api private
+ * @private
  */
 
 function mimeMatch(expected, actual) {
