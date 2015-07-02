@@ -161,16 +161,14 @@ function typeofrequest(req, types_) {
 function normalize(type) {
   switch (type) {
     case 'urlencoded':
-      type = 'application/x-www-form-urlencoded'
-      break
+      return 'application/x-www-form-urlencoded'
     case 'multipart':
-      type = 'multipart/*'
-      break
+      return 'multipart/*'
   }
 
   if (type[0] === '+') {
     // "+json" -> "*/*+json" expando
-    type = '*/*' + type
+    return '*/*' + type
   }
 
   return type.indexOf('/') === -1
