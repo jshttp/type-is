@@ -3,6 +3,7 @@ unreleased
 
   * deps: mime-types@~2.1.2
     - Add new mime types
+  * perf: enable strict mode
 
 1.6.3 / 2015-06-08
 ==================
