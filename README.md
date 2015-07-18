@@ -41,6 +41,21 @@ is(req, ['application/json']) // 'application/json'
 is(req, ['html']) // false
 ```
 
+### is.hasBody(request)
+
+Returns a Boolean if the given `request` has a body, regardless of the
+`Content-Type` header.
+
+```js
+if (is.hasBody(req)) {
+  // read the body, since there is one
+
+  req.on('data', function (chunk) {
+    // ...
+  })
+}
+```
+
 ### type = is.is(mediaType, types)
 
 `mediaType` is the [media type](https://tools.ietf.org/html/rfc6838) string. `types` is an array of types.
