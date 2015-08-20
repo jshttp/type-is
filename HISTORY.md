@@ -1,5 +1,5 @@
-unreleased
-==========
+1.6.7 / 2015-08-20
+==================
 
   * Fix type error when given invalid type to match against
   * deps: mime-types@~2.1.5
