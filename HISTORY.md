@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Fix type error when given invalid type to match against
+
 1.6.6 / 2015-07-31
 ==================
 

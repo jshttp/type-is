@@ -159,6 +159,11 @@ function typeofrequest(req, types_) {
  */
 
 function normalize(type) {
+  if (typeof type !== 'string') {
+    // invalid type
+    return false
+  }
+
   switch (type) {
     case 'urlencoded':
       return 'application/x-www-form-urlencoded'

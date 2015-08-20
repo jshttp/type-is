@@ -26,6 +26,7 @@ describe('typeis(req, type)', function(){
   it('should not match invalid type', function(){
     var req = createRequest('text/html')
     assert.strictEqual(typeis(req, ['text/html/']), false)
+    assert.strictEqual(typeis(req, [undefined, null, true, function(){}]), false)
   })
 
   describe('when no body is given', function(){
