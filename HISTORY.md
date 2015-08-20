@@ -2,6 +2,8 @@ unreleased
 ==========
 
   * Fix type error when given invalid type to match against
+  * deps: mime-types@~2.1.5
+    - Add new mime types
 
 1.6.6 / 2015-07-31
 ==================
