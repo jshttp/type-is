@@ -1,7 +1,7 @@
-unreleased
-==========
+1.6.10 / 2015-12-01
+===================
 
-  * deps: mime-types@~2.1.8
+  * deps: mime-types@~2.1.9
     - Add new mime types
 
 1.6.9 / 2015-09-27
