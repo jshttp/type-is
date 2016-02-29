@@ -3,6 +3,8 @@ unreleased
 
   * deps: mime-types@~2.1.10
     - Add new mime types
+    - Fix extension of `application/dash+xml`
+    - Update primary extension for `audio/mp4`
 
 1.6.11 / 2016-01-29
 ===================
