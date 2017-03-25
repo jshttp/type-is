@@ -22,30 +22,30 @@ $ npm install type-is
 
 ```js
 var http = require('http')
-var is   = require('type-is')
+var typeis = require('type-is')
 
 http.createServer(function (req, res) {
-  var istext = is(req, ['text/*'])
+  var istext = typeis(req, ['text/*'])
   res.end('you ' + (istext ? 'sent' : 'did not send') + ' me text')
 })
 ```
 
-### type = is(request, types)
+### type = typeis(request, types)
 
 `request` is the node HTTP request. `types` is an array of types.
 
 ```js
 // req.headers.content-type = 'application/json'
 
-is(req, ['json'])             // 'json'
-is(req, ['html', 'json'])     // 'json'
-is(req, ['application/*'])    // 'application/json'
-is(req, ['application/json']) // 'application/json'
+typeis(req, ['json'])             // 'json'
+typeis(req, ['html', 'json'])     // 'json'
+typeis(req, ['application/*'])    // 'application/json'
+typeis(req, ['application/json']) // 'application/json'
 
-is(req, ['html']) // false
+typeis(req, ['html']) // false
 ```
 
-### is.hasBody(request)
+### typeis.hasBody(request)
 
 Returns a Boolean if the given `request` has a body, regardless of the
 `Content-Type` header.
@@ -55,7 +55,7 @@ This is similar to how file existence works. If a body does exist, then this
 indicates that there is data to read from the Node.js request stream.
 
 ```js
-if (is.hasBody(req)) {
+if (typeis.hasBody(req)) {
   // read the body, since there is one
 
   req.on('data', function (chunk) {
@@ -64,19 +64,19 @@ if (is.hasBody(req)) {
 }
 ```
 
-### type = is.is(mediaType, types)
+### type = typeis.is(mediaType, types)
 
 `mediaType` is the [media type](https://tools.ietf.org/html/rfc6838) string. `types` is an array of types.
 
 ```js
 var mediaType = 'application/json'
 
-is.is(mediaType, ['json'])             // 'json'
-is.is(mediaType, ['html', 'json'])     // 'json'
-is.is(mediaType, ['application/*'])    // 'application/json'
-is.is(mediaType, ['application/json']) // 'application/json'
+typeis.is(mediaType, ['json'])             // 'json'
+typeis.is(mediaType, ['html', 'json'])     // 'json'
+typeis.is(mediaType, ['application/*'])    // 'application/json'
+typeis.is(mediaType, ['application/json']) // 'application/json'
 
-is.is(mediaType, ['html']) // false
+typeis.is(mediaType, ['html']) // false
 ```
 
 ### Each type can be:
@@ -95,14 +95,14 @@ is.is(mediaType, ['html']) // false
 #### Example body parser
 
 ```js
-var is = require('type-is');
+var typeis = require('type-is');
 
 function bodyParser(req, res, next) {
-  if (!is.hasBody(req)) {
+  if (!typeis.hasBody(req)) {
     return next()
   }
 
-  switch (is(req, ['urlencoded', 'json', 'multipart'])) {
+  switch (typeis(req, ['urlencoded', 'json', 'multipart'])) {
     case 'urlencoded':
       // parse urlencoded body
       throw new Error('implement urlencoded body parsing')
