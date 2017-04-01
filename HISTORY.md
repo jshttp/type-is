@@ -1,5 +1,5 @@
-unreleased
-==========
+1.6.15 / 2017-03-31
+===================
 
   * deps: mime-types@~2.1.15
     - Add new mime types
