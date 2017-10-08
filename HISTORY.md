@@ -1,3 +1,12 @@
+unreleased
+==========
+
+  * deps: mime-types@~2.1.17
+    - Add extension `.wadl` to `application/vnd.sun.wadl+xml`
+    - Add extension `.gz` to `application/gzip`
+    - Add new mime types
+    - Update extensions `.md` and `.markdown` to be `text/markdown`
+
 1.6.15 / 2017-03-31
 ===================
 
