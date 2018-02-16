@@ -1,5 +1,5 @@
-unreleased
-==========
+1.6.16 / 2018-02-16
+===================
 
   * deps: mime-types@~2.1.18
     - Add `application/raml+yaml` with extension `.raml`
