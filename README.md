@@ -39,12 +39,12 @@ http.createServer(function (req, res) {
 ```js
 // req.headers.content-type = 'application/json'
 
-typeis(req, ['json'])             // 'json'
-typeis(req, ['html', 'json'])     // 'json'
-typeis(req, ['application/*'])    // 'application/json'
-typeis(req, ['application/json']) // 'application/json'
+typeis(req, ['json']) // => 'json'
+typeis(req, ['html', 'json']) // => 'json'
+typeis(req, ['application/*']) // => 'application/json'
+typeis(req, ['application/json']) // => 'application/json'
 
-typeis(req, ['html']) // false
+typeis(req, ['html']) // => false
 ```
 
 ### typeis.hasBody(request)
@@ -77,12 +77,12 @@ if (typeis.hasBody(req)) {
 ```js
 var mediaType = 'application/json'
 
-typeis.is(mediaType, ['json'])             // 'json'
-typeis.is(mediaType, ['html', 'json'])     // 'json'
-typeis.is(mediaType, ['application/*'])    // 'application/json'
-typeis.is(mediaType, ['application/json']) // 'application/json'
+typeis.is(mediaType, ['json']) // => 'json'
+typeis.is(mediaType, ['html', 'json']) // => 'json'
+typeis.is(mediaType, ['application/*']) // => 'application/json'
+typeis.is(mediaType, ['application/json']) // => 'application/json'
 
-typeis.is(mediaType, ['html']) // false
+typeis.is(mediaType, ['html']) // => false
 ```
 
 ### Each type can be:
