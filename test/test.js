@@ -174,13 +174,30 @@ describe('typeis.hasBody(req)', function () {
       assert.strictEqual(typeis.hasBody(req), true)
     })
   })
+
+  describe('http2 request', function () {
+    it('should indicate body', function () {
+      var req = {headers: {}, httpVersionMajor: 2}
+      assert.strictEqual(typeis.hasBody(req), true)
+    })
+  })
 })
 
 function createRequest (type) {
-  return {
-    headers: {
-      'content-type': type || '',
-      'transfer-encoding': 'chunked'
+  if (process.env.HTTP2_TEST) {
+    console.log('http2')
+    return {
+      headers: {
+        'content-type': type || ''
+      },
+      httpVersionMajor: 2
+    }
+  } else {
+    return {
+      headers: {
+        'content-type': type || '',
+        'transfer-encoding': 'chunked'
+      }
     }
   }
 }
