@@ -84,14 +84,30 @@ function typeis (value, types_) {
  * or `content-length` headers set.
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.3
  *
+ * A http/2 request with DataFrame can have no `content-length` header.
+ * https://httpwg.org/specs/rfc7540.html
+ *
  * @param {Object} request
  * @return {Boolean}
  * @public
  */
 
 function hasbody (req) {
-  return req.headers['transfer-encoding'] !== undefined ||
+  return ishttp2(req) ||
+    req.headers['transfer-encoding'] !== undefined ||
     !isNaN(req.headers['content-length'])
+}
+
+/**
+ * Check if a request is a http2 request.
+ *
+ * @param {Object} request
+ * @return {Boolean}
+ * @public
+ */
+
+function ishttp2 (req) {
+  return req.httpVersionMajor === 2
 }
 
 /**
