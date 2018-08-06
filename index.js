@@ -86,7 +86,7 @@ function typeis (value, types_) {
  *
  * A http/2 request with DataFrame can have no `content-length` header.
  * https://httpwg.org/specs/rfc7540.html
- * 
+ *
  * A http/2 request without DataFrame send HeaderFrame with end-stream-flag.
  * If nodejs gets end-stream-flag, then nodejs ends readable stream.
  * https://github.com/nodejs/node/blob/master/lib/internal/http2/core.js#L301
@@ -97,7 +97,7 @@ function typeis (value, types_) {
  */
 
 function hasbody (req) {
-  return (ishttp2(req) && !req.stream._readableState.ended)||
+  return (ishttp2(req) && !req.stream._readableState.ended) ||
     req.headers['transfer-encoding'] !== undefined ||
     !isNaN(req.headers['content-length'])
 }

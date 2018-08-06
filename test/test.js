@@ -178,7 +178,7 @@ describe('typeis.hasBody(req)', function () {
   describe('http2 request', function () {
     it('should not indicate body', function () {
       var req = {
-        headers: {}, 
+        headers: {},
         stream: {
           _readableState: {
             ended: true
@@ -191,7 +191,7 @@ describe('typeis.hasBody(req)', function () {
 
     it('should indicate body', function () {
       var req = {
-        headers: {}, 
+        headers: {},
         stream: {
           _readableState: {
             ended: false
