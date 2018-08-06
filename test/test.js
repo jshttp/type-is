@@ -176,8 +176,29 @@ describe('typeis.hasBody(req)', function () {
   })
 
   describe('http2 request', function () {
+    it('should not indicate body', function () {
+      var req = {
+        headers: {}, 
+        stream: {
+          _readableState: {
+            ended: true
+          }
+        },
+        httpVersionMajor: 2
+      }
+      assert.strictEqual(typeis.hasBody(req), false)
+    })
+
     it('should indicate body', function () {
-      var req = {headers: {}, httpVersionMajor: 2}
+      var req = {
+        headers: {}, 
+        stream: {
+          _readableState: {
+            ended: false
+          }
+        },
+        httpVersionMajor: 2
+      }
       assert.strictEqual(typeis.hasBody(req), true)
     })
   })
@@ -185,10 +206,14 @@ describe('typeis.hasBody(req)', function () {
 
 function createRequest (type) {
   if (process.env.HTTP2_TEST) {
-    console.log('http2')
     return {
       headers: {
         'content-type': type || ''
+      },
+      stream: {
+        _readableState: {
+          ended: false
+        }
       },
       httpVersionMajor: 2
     }
