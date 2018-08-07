@@ -255,6 +255,7 @@ function createRequest (type, callback) {
   if (process.env.HTTP2_TEST) {
     var server = http2.createServer(function (req, res) {
       callback(req)
+      server.close()
     })
 
     server = server.listen(function () {
@@ -278,6 +279,7 @@ function createBodylessRequest (type, callback) {
   if (process.env.HTTP2_TEST) {
     var server = http2.createServer(function (req, res) {
       callback(req)
+      server.close()
     })
 
     server = server.listen(function () {
