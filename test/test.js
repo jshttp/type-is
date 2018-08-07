@@ -1,12 +1,13 @@
 
 var assert = require('assert')
 var typeis = require('..')
-var request = require('superagent')
+var request
 var http2
 
 if (process.env.HTTP2_TEST) {
-  request.http2 = true
   http2 = require('http2')
+  request = require('superagent')
+  request.http2 = true
 }
 
 describe('typeis(req, type)', function () {
