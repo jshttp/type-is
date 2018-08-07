@@ -258,7 +258,7 @@ function createRequest (type, callback) {
     })
 
     server = server.listen(function () {
-      request.post(`localhost:${server.address().port}/`)
+      request.post('localhost:' + server.address().port + '/')
         .send('hello')
         .set('content-type', type || undefined)
         .end()
