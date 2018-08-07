@@ -59,16 +59,14 @@ describe('typeis(req, type)', function () {
   })
 
   describe('when no content type is given', function () {
-    if (!process.env.HTTP2_TEST) {
-      it('should return false', function (done) {
-        createRequest('', function (req) {
-          assert.strictEqual(typeis(req), false)
-          assert.strictEqual(typeis(req, ['image/*']), false)
-          assert.strictEqual(typeis(req, ['text/*', 'image/*']), false)
-          done()
-        })
+    it('should return false', function (done) {
+      createRequest('', function (req) {
+        assert.strictEqual(typeis(req), false)
+        assert.strictEqual(typeis(req, ['image/*']), false)
+        assert.strictEqual(typeis(req, ['text/*', 'image/*']), false)
+        done()
       })
-    }
+    })
   })
 
   describe('give no types', function () {
@@ -261,8 +259,8 @@ function createRequest (type, callback) {
 
     server = server.listen(function () {
       request.post(`localhost:${server.address().port}/`)
-        .set('content-type', type || '')
-        .send('buffer')
+        .send('hello')
+        .set('content-type', type || undefined)
         .end()
     })
   } else {
@@ -284,7 +282,7 @@ function createBodylessRequest (type, callback) {
 
     server = server.listen(function () {
       request.get(`localhost:${server.address().port}/`)
-        .set('content-type', type || '')
+        .set('content-type', type || undefined)
         .end()
     })
   } else {
