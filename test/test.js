@@ -281,7 +281,7 @@ function createBodylessRequest (type, callback) {
     })
 
     server = server.listen(function () {
-      request.get(`localhost:${server.address().port}/`)
+      request.get('localhost:' + server.address().port + '/')
         .set('content-type', type || undefined)
         .end()
     })
