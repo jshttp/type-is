@@ -97,7 +97,7 @@ function typeis (value, types_) {
  */
 
 function hasbody (req) {
-  return (ishttp2(req) && (req.stream.readable || req.stream._readableState.endEmitted)) ||
+  return (ishttp2(req) && (req.stream.readable || !req.stream._readableState.sync)) ||
     req.headers['transfer-encoding'] !== undefined ||
     !isNaN(req.headers['content-length'])
 }

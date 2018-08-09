@@ -243,6 +243,36 @@ describe('typeis.hasBody(req)', function () {
         })
       })
 
+      it('should not indicate body after end event occurred', function (done) {
+        createBodylessRequest('', function (req) {
+          var data = ''
+          req.on('data', function (chunk) {
+            data += chunk
+          })
+          req.on('end', function (chunk) {
+            process.nextTick(function () {
+              assert.strictEqual(data, '')
+              assert.strictEqual(typeis.hasBody(req), false)
+              done()
+            })
+          })
+        })
+      })
+
+      it('should not indicate body while end event occurred', function (done) {
+        createBodylessRequest('', function (req) {
+          var data = ''
+          req.on('data', function (chunk) {
+            data += chunk
+          })
+          req.on('end', function (chunk) {
+            assert.strictEqual(data, '')
+            assert.strictEqual(typeis.hasBody(req), false)
+            done()
+          })
+        })
+      })
+
       it('should indicate body', function (done) {
         createRequest('', function (req) {
           assert.strictEqual(typeis.hasBody(req), true)
@@ -262,6 +292,29 @@ describe('typeis.hasBody(req)', function () {
               assert.strictEqual(typeis.hasBody(req), true)
               done()
             })
+          })
+        })
+      })
+
+      it('should indicate body while end event occurred', function (done) {
+        createRequest('', function (req) {
+          var data = ''
+          req.on('data', function (chunk) {
+            data += chunk
+          })
+          req.on('end', function (chunk) {
+            assert.strictEqual(data, 'hello')
+            assert.strictEqual(typeis.hasBody(req), true)
+            done()
+          })
+        })
+      })
+
+      it('should indicate body while data event', function (done) {
+        createRequest('', function (req) {
+          req.on('data', function (chunk) {
+            assert.strictEqual(typeis.hasBody(req), true)
+            done()
           })
         })
       })
