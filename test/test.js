@@ -3,11 +3,13 @@ var assert = require('assert')
 var typeis = require('..')
 var request
 var http2
+var readable
 
 if (process.env.HTTP2_TEST) {
   http2 = require('http2')
   request = require('superagent')
   request.http2 = true
+  readable = require('stream').Readable;
 }
 
 describe('typeis(req, type)', function () {
@@ -247,6 +249,22 @@ describe('typeis.hasBody(req)', function () {
           done()
         })
       })
+
+      it('should indicate body after end event occurred', function (done) {
+        createRequest('', function (req) {
+          var data = '';
+          req.on('data', function(chunk) {
+            data += chunk
+          })
+          req.on('end', function(chunk) {
+            process.nextTick( function(){
+              assert.strictEqual(data, 'hello')
+              assert.strictEqual(typeis.hasBody(req), true)
+              done()
+            })
+          })
+        })
+      })
     })
   }
 })
@@ -259,10 +277,12 @@ function createRequest (type, callback) {
     })
 
     server = server.listen(function () {
-      request.post('localhost:' + server.address().port + '/')
-        .send('hello')
+      var s = new readable()
+      s.push('hello')
+      s.push(null)
+      var req = request.post('localhost:' + server.address().port + '/')
         .set('content-type', type || undefined)
-        .end()
+      s.pipe(req)
     })
   } else {
     var req = {
