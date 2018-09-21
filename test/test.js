@@ -7,8 +7,6 @@ var Readable
 
 if (process.env.HTTP2_TEST) {
   http2 = require('http2')
-  request = require('superagent')
-  request.http2 = true
   Readable = require('stream').Readable
 }
 
@@ -216,9 +214,11 @@ describe('typeis.hasBody(req)', function () {
       assert.strictEqual(typeis.hasBody(req), true)
     })
 
-    it('should be true when 0', function () {
-      var req = {headers: {'content-length': '0'}}
-      assert.strictEqual(typeis.hasBody(req), true)
+    it('should be true when 0', function (done) {
+      createZeroLengthBodyRequest('', function (req) {
+        assert.strictEqual(typeis.hasBody(req), true)
+        done()
+      })
     })
 
     it('should be false when bogus', function () {
@@ -333,9 +333,15 @@ function createRequest (type, callback) {
       var s = new Readable()
       s.push('hello')
       s.push(null)
-      var req = request.post('localhost:' + server.address().port + '/')
-        .set('content-type', type || undefined)
-      s.pipe(req)
+
+      var session = http2.connect('http://localhost:' + server.address().port)
+      var headers = {
+        ':path': '/',
+        ':method': 'post',
+        'content-type': type || undefined
+      }
+      var request = session.request(headers)
+      s.pipe(request)
     })
   } else {
     var req = {
@@ -356,14 +362,49 @@ function createBodylessRequest (type, callback) {
     })
 
     server = server.listen(function () {
-      request.get('localhost:' + server.address().port + '/')
-        .set('content-type', type || undefined)
-        .end()
+      var session = http2.connect('http://localhost:' + server.address().port)
+      var headers = {
+        ':path': '/',
+        ':method': 'get',
+        'content-type': type || ''
+      }
+      var option = {
+        endStream: true
+      }
+      session.request(headers, option)
     })
   } else {
     var req = {
       headers: {
         'content-type': type || ''
+      }
+    }
+    callback(req)
+  }
+}
+
+function createZeroLengthBodyRequest (type, callback) {
+  if (process.env.HTTP2_TEST) {
+    var server = http2.createServer(function (req, res) {
+      callback(req)
+      server.close()
+    })
+
+    server = server.listen(function () {
+      var session = http2.connect('http://localhost:' + server.address().port)
+      var headers = {
+        ':path': '/',
+        ':method': 'get',
+        'content-type': type || ''
+      }
+      var request = session.request(headers)
+      request.end()
+    })
+  } else {
+    var req = {
+      headers: {
+        'content-type': type || '',
+        'content-length': 0
       }
     }
     callback(req)
