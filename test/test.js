@@ -1,7 +1,6 @@
 
 var assert = require('assert')
 var typeis = require('..')
-var request
 var http2
 var Readable
 
