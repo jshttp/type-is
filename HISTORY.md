@@ -1,3 +1,15 @@
+unreleased
+==========
+
+  * deps: mime-types@2.1.21
+    - Add Apple file extensions from IANA
+    - Add extension `.csl` to `application/vnd.citationstyles.style+xml`
+    - Add extension `.es` to `application/ecmascript`
+    - Add extension `.owl` to `application/rdf+xml`
+    - Add extensions from IANA for `image/*` types
+    - Add extensions to HEIC image types
+    - Add new mime types
+
 1.6.16 / 2018-02-16
 ===================
 
