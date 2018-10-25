@@ -5,17 +5,17 @@ var typeis = require('..')
 describe('typeis(req, type)', function () {
   it('should ignore params', function () {
     var req = createRequest('text/html; charset=utf-8')
-    assert.equal(typeis(req, ['text/*']), 'text/html')
+    assert.strictEqual(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should ignore params LWS', function () {
     var req = createRequest('text/html ; charset=utf-8')
-    assert.equal(typeis(req, ['text/*']), 'text/html')
+    assert.strictEqual(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should ignore casing', function () {
     var req = createRequest('text/HTML')
-    assert.equal(typeis(req, ['text/*']), 'text/html')
+    assert.strictEqual(typeis(req, ['text/*']), 'text/html')
   })
 
   it('should fail invalid type', function () {
@@ -51,7 +51,7 @@ describe('typeis(req, type)', function () {
   describe('give no types', function () {
     it('should return the mime type', function () {
       var req = createRequest('image/png')
-      assert.equal(typeis(req), 'image/png')
+      assert.strictEqual(typeis(req), 'image/png')
     })
   })
 
@@ -59,11 +59,11 @@ describe('typeis(req, type)', function () {
     it('should return the type or false', function () {
       var req = createRequest('image/png')
 
-      assert.equal(typeis(req, ['png']), 'png')
-      assert.equal(typeis(req, ['.png']), '.png')
-      assert.equal(typeis(req, ['image/png']), 'image/png')
-      assert.equal(typeis(req, ['image/*']), 'image/png')
-      assert.equal(typeis(req, ['*/png']), 'image/png')
+      assert.strictEqual(typeis(req, ['png']), 'png')
+      assert.strictEqual(typeis(req, ['.png']), '.png')
+      assert.strictEqual(typeis(req, ['image/png']), 'image/png')
+      assert.strictEqual(typeis(req, ['image/*']), 'image/png')
+      assert.strictEqual(typeis(req, ['*/png']), 'image/png')
 
       assert.strictEqual(typeis(req, ['jpeg']), false)
       assert.strictEqual(typeis(req, ['.jpeg']), false)
@@ -80,12 +80,12 @@ describe('typeis(req, type)', function () {
     it('should return the first match or false', function () {
       var req = createRequest('image/png')
 
-      assert.equal(typeis(req, ['png']), 'png')
-      assert.equal(typeis(req, '.png'), '.png')
-      assert.equal(typeis(req, ['text/*', 'image/*']), 'image/png')
-      assert.equal(typeis(req, ['image/*', 'text/*']), 'image/png')
-      assert.equal(typeis(req, ['image/*', 'image/png']), 'image/png')
-      assert.equal(typeis(req, 'image/png', 'image/*'), 'image/png')
+      assert.strictEqual(typeis(req, ['png']), 'png')
+      assert.strictEqual(typeis(req, '.png'), '.png')
+      assert.strictEqual(typeis(req, ['text/*', 'image/*']), 'image/png')
+      assert.strictEqual(typeis(req, ['image/*', 'text/*']), 'image/png')
+      assert.strictEqual(typeis(req, ['image/*', 'image/png']), 'image/png')
+      assert.strictEqual(typeis(req, 'image/png', 'image/*'), 'image/png')
 
       assert.strictEqual(typeis(req, ['jpeg']), false)
       assert.strictEqual(typeis(req, ['.jpeg']), false)
@@ -98,10 +98,10 @@ describe('typeis(req, type)', function () {
     it('should match suffix types', function () {
       var req = createRequest('application/vnd+json')
 
-      assert.equal(typeis(req, '+json'), 'application/vnd+json')
-      assert.equal(typeis(req, 'application/vnd+json'), 'application/vnd+json')
-      assert.equal(typeis(req, 'application/*+json'), 'application/vnd+json')
-      assert.equal(typeis(req, '*/vnd+json'), 'application/vnd+json')
+      assert.strictEqual(typeis(req, '+json'), 'application/vnd+json')
+      assert.strictEqual(typeis(req, 'application/vnd+json'), 'application/vnd+json')
+      assert.strictEqual(typeis(req, 'application/*+json'), 'application/vnd+json')
+      assert.strictEqual(typeis(req, '*/vnd+json'), 'application/vnd+json')
       assert.strictEqual(typeis(req, 'application/json'), false)
       assert.strictEqual(typeis(req, 'text/*+json'), false)
     })
@@ -109,10 +109,10 @@ describe('typeis(req, type)', function () {
 
   describe('given "*/*"', function () {
     it('should match any content-type', function () {
-      assert.equal(typeis(createRequest('text/html'), '*/*'), 'text/html')
-      assert.equal(typeis(createRequest('text/xml'), '*/*'), 'text/xml')
-      assert.equal(typeis(createRequest('application/json'), '*/*'), 'application/json')
-      assert.equal(typeis(createRequest('application/vnd+json'), '*/*'), 'application/vnd+json')
+      assert.strictEqual(typeis(createRequest('text/html'), '*/*'), 'text/html')
+      assert.strictEqual(typeis(createRequest('text/xml'), '*/*'), 'text/xml')
+      assert.strictEqual(typeis(createRequest('application/json'), '*/*'), 'application/json')
+      assert.strictEqual(typeis(createRequest('application/vnd+json'), '*/*'), 'application/vnd+json')
     })
 
     it('should not match invalid content-type', function () {
@@ -129,9 +129,9 @@ describe('typeis(req, type)', function () {
     it('should match "urlencoded"', function () {
       var req = createRequest('application/x-www-form-urlencoded')
 
-      assert.equal(typeis(req, ['urlencoded']), 'urlencoded')
-      assert.equal(typeis(req, ['json', 'urlencoded']), 'urlencoded')
-      assert.equal(typeis(req, ['urlencoded', 'json']), 'urlencoded')
+      assert.strictEqual(typeis(req, ['urlencoded']), 'urlencoded')
+      assert.strictEqual(typeis(req, ['json', 'urlencoded']), 'urlencoded')
+      assert.strictEqual(typeis(req, ['urlencoded', 'json']), 'urlencoded')
     })
   })
 
@@ -139,13 +139,13 @@ describe('typeis(req, type)', function () {
     it('should match "multipart/*"', function () {
       var req = createRequest('multipart/form-data')
 
-      assert.equal(typeis(req, ['multipart/*']), 'multipart/form-data')
+      assert.strictEqual(typeis(req, ['multipart/*']), 'multipart/form-data')
     })
 
     it('should match "multipart"', function () {
       var req = createRequest('multipart/form-data')
 
-      assert.equal(typeis(req, ['multipart']), 'multipart')
+      assert.strictEqual(typeis(req, ['multipart']), 'multipart')
     })
   })
 })
