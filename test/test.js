@@ -31,7 +31,7 @@ describe('typeis(req, type)', function () {
 
   describe('when no body is given', function () {
     it('should return null', function () {
-      var req = {headers: {}}
+      var req = { headers: {} }
 
       assert.strictEqual(typeis(req), null)
       assert.strictEqual(typeis(req, ['image/*']), null)
@@ -120,7 +120,7 @@ describe('typeis(req, type)', function () {
     })
 
     it('should not match body-less request', function () {
-      var req = {headers: {'content-type': 'text/html'}}
+      var req = { headers: { 'content-type': 'text/html' } }
       assert.strictEqual(typeis(req, '*/*'), null)
     })
   })
@@ -153,24 +153,24 @@ describe('typeis(req, type)', function () {
 describe('typeis.hasBody(req)', function () {
   describe('content-length', function () {
     it('should indicate body', function () {
-      var req = {headers: {'content-length': '1'}}
+      var req = { headers: { 'content-length': '1' } }
       assert.strictEqual(typeis.hasBody(req), true)
     })
 
     it('should be true when 0', function () {
-      var req = {headers: {'content-length': '0'}}
+      var req = { headers: { 'content-length': '0' } }
       assert.strictEqual(typeis.hasBody(req), true)
     })
 
     it('should be false when bogus', function () {
-      var req = {headers: {'content-length': 'bogus'}}
+      var req = { headers: { 'content-length': 'bogus' } }
       assert.strictEqual(typeis.hasBody(req), false)
     })
   })
 
   describe('transfer-encoding', function () {
     it('should indicate body', function () {
-      var req = {headers: {'transfer-encoding': 'chunked'}}
+      var req = { headers: { 'transfer-encoding': 'chunked' } }
       assert.strictEqual(typeis.hasBody(req), true)
     })
   })
