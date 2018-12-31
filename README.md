@@ -1,7 +1,7 @@
 # type-is
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][npm-url]
 [![Node.js Version][node-version-image]][node-version-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
@@ -134,13 +134,12 @@ app.use(function bodyParser (req, res, next) {
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/type-is.svg
-[npm-url]: https://npmjs.org/package/type-is
-[node-version-image]: https://img.shields.io/node/v/type-is.svg
-[node-version-url]: https://nodejs.org/en/download/
-[travis-image]: https://img.shields.io/travis/jshttp/type-is/master.svg
-[travis-url]: https://travis-ci.org/jshttp/type-is
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/type-is/master.svg
+[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/type-is/master
 [coveralls-url]: https://coveralls.io/r/jshttp/type-is?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/type-is.svg
-[downloads-url]: https://npmjs.org/package/type-is
+[node-version-image]: https://badgen.net/npm/node/type-is
+[node-version-url]: https://nodejs.org/en/download
+[npm-downloads-image]: https://badgen.net/npm/dm/type-is
+[npm-url]: https://npmjs.org/package/type-is
+[npm-version-image]: https://badgen.net/npm/v/type-is
+[travis-image]: https://badgen.net/travis/jshttp/type-is/master
+[travis-url]: https://travis-ci.org/jshttp/type-is
