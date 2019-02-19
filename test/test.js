@@ -179,7 +179,7 @@ describe('typeis.hasBody(req)', function () {
 function createRequest (type) {
   return {
     headers: {
-      'content-type': type || '',
+      'content-type': type || undefined,
       'transfer-encoding': 'chunked'
     }
   }

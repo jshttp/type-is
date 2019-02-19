@@ -14,6 +14,7 @@ unreleased
     - Add extensions to HEIC image types
     - Add new mime types
     - Add `text/mdx` with extension `.mdx`
+  * perf: prevent internal `throw` on invalid type
 
 1.6.16 / 2018-02-16
 ===================
