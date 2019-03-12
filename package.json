@@ -10,7 +10,7 @@
   "repository": "jshttp/type-is",
   "dependencies": {
     "media-typer": "0.3.0",
-    "mime-types": "2.1.21"
+    "mime-types": "2.1.22"
   },
   "devDependencies": {
     "eslint": "5.12.0",
