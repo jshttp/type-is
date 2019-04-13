@@ -98,7 +98,7 @@ typeis.is(mediaType, ['html']) // false
 
 ## Examples
 
-### Example body parser
+#### Example body parser
 
 ```js
 var express = require('express')
