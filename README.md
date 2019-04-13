@@ -132,7 +132,7 @@ app.use(function bodyParser (req, res, next) {
 
 ## License
 
-[MIT](LICENSE)
+This module has been licensed under the [MIT](LICENSE).
 
 [npm-image]: https://img.shields.io/npm/v/type-is.svg
 [npm-url]: https://npmjs.org/package/type-is
