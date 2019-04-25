@@ -1,5 +1,5 @@
-unreleased
-==========
+1.6.17 / 2019-04-25
+===================
 
   * deps: mime-types@~2.1.24
     - Add Apple file extensions from IANA
