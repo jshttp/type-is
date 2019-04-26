@@ -2,7 +2,7 @@
 var assert = require('assert')
 var typeis = require('..')
 
-describe('typeis(req, type)', function () {
+describe('typeis(req, types)', function () {
   it('should ignore params', function () {
     var req = createRequest('text/html; charset=utf-8')
     assert.strictEqual(typeis(req, ['text/*']), 'text/html')
