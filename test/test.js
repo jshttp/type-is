@@ -176,6 +176,124 @@ describe('typeis.hasBody(req)', function () {
   })
 })
 
+describe('typeis.is(mediaType, types)', function () {
+  it('should ignore params', function () {
+    assert.strictEqual(typeis.is('text/html; charset=utf-8', ['text/*']),
+      'text/html')
+  })
+
+  it('should ignore casing', function () {
+    assert.strictEqual(typeis.is('text/HTML', ['text/*']), 'text/html')
+  })
+
+  it('should fail invalid type', function () {
+    assert.strictEqual(typeis.is('text/html**', ['text/*']), false)
+  })
+
+  it('should not match invalid type', function () {
+    var req = createRequest('text/html')
+    assert.strictEqual(typeis(req, ['text/html/']), false)
+    assert.strictEqual(typeis(req, [undefined, null, true, function () {}]), false)
+  })
+
+  it('should not match invalid type', function () {
+    assert.strictEqual(typeis.is('text/html', ['text/html/']), false)
+    assert.strictEqual(typeis.is('text/html', [undefined, null, true, function () {}]), false)
+  })
+
+  describe('when no media type is given', function () {
+    it('should return false', function () {
+      assert.strictEqual(typeis.is(), false)
+      assert.strictEqual(typeis.is('', ['application/json']), false)
+      assert.strictEqual(typeis.is(null, ['image/*']), false)
+      assert.strictEqual(typeis.is(undefined, ['text/*', 'image/*']), false)
+    })
+  })
+
+  describe('given no types', function () {
+    it('should return the mime type', function () {
+      assert.strictEqual(typeis.is('image/png'), 'image/png')
+    })
+  })
+
+  describe('given one type', function () {
+    it('should return the type or false', function () {
+      assert.strictEqual(typeis.is('image/png', ['png']), 'png')
+      assert.strictEqual(typeis.is('image/png', ['.png']), '.png')
+      assert.strictEqual(typeis.is('image/png', ['image/png']), 'image/png')
+      assert.strictEqual(typeis.is('image/png', ['image/*']), 'image/png')
+      assert.strictEqual(typeis.is('image/png', ['*/png']), 'image/png')
+
+      assert.strictEqual(typeis.is('image/png', ['jpeg']), false)
+      assert.strictEqual(typeis.is('image/png', ['.jpeg']), false)
+      assert.strictEqual(typeis.is('image/png', ['image/jpeg']), false)
+      assert.strictEqual(typeis.is('image/png', ['text/*']), false)
+      assert.strictEqual(typeis.is('image/png', ['*/jpeg']), false)
+
+      assert.strictEqual(typeis.is('image/png', ['bogus']), false)
+      assert.strictEqual(typeis.is('image/png', ['something/bogus*']), false)
+    })
+  })
+
+  describe('given multiple types', function () {
+    it('should return the first match or false', function () {
+      assert.strictEqual(typeis.is('image/png', ['png']), 'png')
+      assert.strictEqual(typeis.is('image/png', '.png'), '.png')
+      assert.strictEqual(typeis.is('image/png', ['text/*', 'image/*']), 'image/png')
+      assert.strictEqual(typeis.is('image/png', ['image/*', 'text/*']), 'image/png')
+      assert.strictEqual(typeis.is('image/png', ['image/*', 'image/png']), 'image/png')
+      assert.strictEqual(typeis.is('image/png', 'image/png', 'image/*'), 'image/png')
+
+      assert.strictEqual(typeis.is('image/png', ['jpeg']), false)
+      assert.strictEqual(typeis.is('image/png', ['.jpeg']), false)
+      assert.strictEqual(typeis.is('image/png', ['text/*', 'application/*']), false)
+      assert.strictEqual(typeis.is('image/png', ['text/html', 'text/plain', 'application/json']), false)
+    })
+  })
+
+  describe('given +suffix', function () {
+    it('should match suffix types', function () {
+      assert.strictEqual(typeis.is('application/vnd+json', '+json'), 'application/vnd+json')
+      assert.strictEqual(typeis.is('application/vnd+json', 'application/vnd+json'), 'application/vnd+json')
+      assert.strictEqual(typeis.is('application/vnd+json', 'application/*+json'), 'application/vnd+json')
+      assert.strictEqual(typeis.is('application/vnd+json', '*/vnd+json'), 'application/vnd+json')
+      assert.strictEqual(typeis.is('application/vnd+json', 'application/json'), false)
+      assert.strictEqual(typeis.is('application/vnd+json', 'text/*+json'), false)
+    })
+  })
+
+  describe('given "*/*"', function () {
+    it('should match any media type', function () {
+      assert.strictEqual(typeis.is('text/html', '*/*'), 'text/html')
+      assert.strictEqual(typeis.is('text/xml', '*/*'), 'text/xml')
+      assert.strictEqual(typeis.is('application/json', '*/*'), 'application/json')
+      assert.strictEqual(typeis.is('application/vnd+json', '*/*'), 'application/vnd+json')
+    })
+
+    it('should not match invalid media type', function () {
+      assert.strictEqual(typeis.is('bogus', '*/*'), false)
+    })
+  })
+
+  describe('when media type is application/x-www-form-urlencoded', function () {
+    it('should match "urlencoded"', function () {
+      assert.strictEqual(typeis.is('application/x-www-form-urlencoded', ['urlencoded']), 'urlencoded')
+      assert.strictEqual(typeis.is('application/x-www-form-urlencoded', ['json', 'urlencoded']), 'urlencoded')
+      assert.strictEqual(typeis.is('application/x-www-form-urlencoded', ['urlencoded', 'json']), 'urlencoded')
+    })
+  })
+
+  describe('when media type is multipart/form-data', function () {
+    it('should match "multipart/*"', function () {
+      assert.strictEqual(typeis.is('multipart/form-data', ['multipart/*']), 'multipart/form-data')
+    })
+
+    it('should match "multipart"', function () {
+      assert.strictEqual(typeis.is('multipart/form-data', ['multipart']), 'multipart')
+    })
+  })
+})
+
 function createRequest (type) {
   return {
     headers: {
