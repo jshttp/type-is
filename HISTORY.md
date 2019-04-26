@@ -2,7 +2,8 @@ unreleased
 ==========
 
   * Drop node <18
-  * deps: replace media-typer with content-type
+  * Use `content-type` and `media-typer` for type validation
+    - No behavior changes, upgrades `media-typer`
   * deps: mime-types@^3.0.0
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`

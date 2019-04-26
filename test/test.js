@@ -18,7 +18,7 @@ describe('typeis(req, types)', function () {
     assert.strictEqual(typeis(req, ['text/*']), 'text/html')
   })
 
-  it.skip('should fail invalid type', function () {
+  it('should fail invalid type', function () {
     var req = createRequest('text/html**')
     assert.strictEqual(typeis(req, ['text/*']), false)
   })
@@ -186,7 +186,7 @@ describe('typeis.is(mediaType, types)', function () {
     assert.strictEqual(typeis.is('text/HTML', ['text/*']), 'text/html')
   })
 
-  it.skip('should fail invalid type', function () {
+  it('should fail invalid type', function () {
     assert.strictEqual(typeis.is('text/html**', ['text/*']), false)
   })
 
