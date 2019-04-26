@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Fix regression passing request object to `typeis.is`
+
 1.6.17 / 2019-04-25
 ===================
 

@@ -292,6 +292,22 @@ describe('typeis.is(mediaType, types)', function () {
       assert.strictEqual(typeis.is('multipart/form-data', ['multipart']), 'multipart')
     })
   })
+
+  describe('when give request object', function () {
+    it('should use the content-type header', function () {
+      var req = createRequest('image/png')
+
+      assert.strictEqual(typeis.is(req, ['png']), 'png')
+      assert.strictEqual(typeis.is(req, ['jpeg']), false)
+    })
+
+    it('should not check for body', function () {
+      var req = { headers: { 'content-type': 'text/html' } }
+
+      assert.strictEqual(typeis.is(req, ['html']), 'html')
+      assert.strictEqual(typeis.is(req, ['jpeg']), false)
+    })
+  })
 })
 
 function createRequest (type) {

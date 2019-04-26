@@ -254,7 +254,7 @@ function normalizeType (value) {
  */
 
 function tryNormalizeType (value) {
-  if (typeof value !== 'string') {
+  if (!value) {
     return null
   }
 
