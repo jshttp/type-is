@@ -1,5 +1,5 @@
-unreleased
-==========
+1.6.18 / 2019-04-26
+===================
 
   * Fix regression passing request object to `typeis.is`
 
