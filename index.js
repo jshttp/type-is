@@ -84,7 +84,7 @@ function typeis (value, types_) {
  * or `content-length` headers set.
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.3
  *
- * @param {Object} request
+ * @param {Object} req
  * @return {Boolean}
  * @public
  */
@@ -237,9 +237,6 @@ function mimeMatch (expected, actual) {
 function normalizeType (value) {
   // parse the type
   var type = typer.parse(value)
-
-  // remove the parameters
-  type.parameters = undefined
 
   // reformat it
   return typer.format(type)
