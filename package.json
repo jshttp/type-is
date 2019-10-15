@@ -13,7 +13,7 @@
     "mime-types": "~2.1.24"
   },
   "devDependencies": {
-    "eslint": "6.4.0",
+    "eslint": "6.5.1",
     "eslint-config-standard": "14.1.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-markdown": "1.0.0",
