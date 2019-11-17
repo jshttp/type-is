@@ -1,3 +1,11 @@
+unreleased
+==========
+
+  * deps: mime-types@~2.1.25
+    - Add new upstream MIME types
+    - Add `application/toml` with extension `.toml`
+    - Add `image/vnd.ms-dds` with extension `.dds`
+
 1.6.18 / 2019-04-26
 ===================
 
