@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": "jshttp/type-is",
   "dependencies": {
-    "media-typer": "0.3.0",
+    "media-typer": "^1.1.0",
     "mime-types": "~2.1.24"
   },
   "devDependencies": {
