@@ -1,10 +1,13 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.25
-    - Add new upstream MIME types
+  * deps: mime-types@~2.1.26
     - Add `application/toml` with extension `.toml`
+    - Add `application/x-keepass2` with extension `.kdbx`
+    - Add extension `.mxmf` to `audio/mobile-xmf`
+    - Add extensions from IANA for `application/*+xml` types
     - Add `image/vnd.ms-dds` with extension `.dds`
+    - Add new upstream MIME types
 
 1.6.18 / 2019-04-26
 ===================
