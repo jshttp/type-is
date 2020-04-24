@@ -1,9 +1,10 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.26
+  * deps: mime-types@~2.1.27
     - Add `application/toml` with extension `.toml`
     - Add `application/x-keepass2` with extension `.kdbx`
+    - Add extension `.cjs` to `application/node`
     - Add extension `.mxmf` to `audio/mobile-xmf`
     - Add extensions from IANA for `application/*+xml` types
     - Add `image/vnd.ms-dds` with extension `.dds`
