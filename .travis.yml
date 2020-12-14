@@ -19,6 +19,9 @@ node_js:
   - "13.13"
   - "14.0"
 dist: trusty
+arch:
+    - amd64
+    - ppc64le
 env:
   global:
     # Suppress Node.js 0.6 compile warnings
