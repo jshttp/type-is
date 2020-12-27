@@ -8,7 +8,7 @@
 
 Infer the content-type of a request.
 
-### Install
+## Install
 
 This is a [Node.js](https://nodejs.org/en/) module available through the
 [npm registry](https://www.npmjs.com/). Installation is done using the
