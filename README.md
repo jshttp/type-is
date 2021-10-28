@@ -3,7 +3,7 @@
 [![NPM Version][npm-version-image]][npm-url]
 [![NPM Downloads][npm-downloads-image]][npm-url]
 [![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][travis-image]][travis-url]
+[![Build Status][ci-image]][ci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
 Infer the content-type of a request.
@@ -159,6 +159,8 @@ app.use(function bodyParser (req, res, next) {
 
 [MIT](LICENSE)
 
+[ci-image]: https://badgen.net/github/checks/jshttp/type-is/master?label=ci
+[ci-url]: https://github.com/jshttp/type-is/actions/workflows/ci.yml
 [coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/type-is/master
 [coveralls-url]: https://coveralls.io/r/jshttp/type-is?branch=master
 [node-version-image]: https://badgen.net/npm/node/type-is
