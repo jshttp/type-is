@@ -52,8 +52,6 @@ Each type in the `types` array can be one of the following:
 
 Some examples to illustrate the inputs and returned value:
 
-<!-- eslint-disable no-undef -->
-
 ```js
 // req.headers.content-type = 'application/json'
 
@@ -73,8 +71,6 @@ Returns a Boolean if the given `request` has a body, regardless of the
 Having a body has no relation to how large the body is (it may be 0 bytes).
 This is similar to how file existence works. If a body does exist, then this
 indicates that there is data to read from the Node.js request stream.
-
-<!-- eslint-disable no-undef -->
 
 ```js
 if (typeis.hasBody(req)) {
@@ -107,8 +103,6 @@ Each type in the `types` array can be one of the following:
   if matched.
 
 Some examples to illustrate the inputs and returned value:
-
-<!-- eslint-disable no-undef -->
 
 ```js
 var mediaType = 'application/json'
