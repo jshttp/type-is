@@ -1,14 +1,21 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.27
+  * deps: mime-types@~2.1.28
     - Add `application/toml` with extension `.toml`
+    - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
     - Add extension `.cjs` to `application/node`
+    - Add extension `.dbf` to `application/vnd.dbf`
     - Add extension `.mxmf` to `audio/mobile-xmf`
+    - Add extension `.rar` to `application/vnd.rar`
+    - Add extension `.td` to `application/urc-targetdesc+xml`
     - Add extensions from IANA for `application/*+xml` types
+    - Add `image/avif` with extension `.avif`
+    - Add `image/ktx2` with extension `.ktx2`
     - Add `image/vnd.ms-dds` with extension `.dds`
     - Add new upstream MIME types
+    - Fix extension of `application/vnd.apple.keynote` to be `.key`
 
 1.6.18 / 2019-04-26
 ===================
