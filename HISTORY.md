@@ -1,13 +1,16 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.28
+  * deps: mime-types@~2.1.29
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
+    - Add extension `.amr` to `audio/amr`
     - Add extension `.cjs` to `application/node`
     - Add extension `.dbf` to `application/vnd.dbf`
+    - Add extension `.m4s` to `video/iso.segment`
     - Add extension `.mxmf` to `audio/mobile-xmf`
+    - Add extension `.opus` to `audio/ogg`
     - Add extension `.rar` to `application/vnd.rar`
     - Add extension `.td` to `application/urc-targetdesc+xml`
     - Add extensions from IANA for `application/*+xml` types
