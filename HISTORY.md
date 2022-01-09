@@ -1,7 +1,7 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.29
+  * deps: mime-types@~2.1.30
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
@@ -19,6 +19,8 @@ unreleased
     - Add `image/vnd.ms-dds` with extension `.dds`
     - Add new upstream MIME types
     - Fix extension of `application/vnd.apple.keynote` to be `.key`
+    - Remove ambigious extensions from IANA for `application/*+xml` types
+    - Update primary extension to `.es` for `application/ecmascript`
 
 1.6.18 / 2019-04-26
 ===================
