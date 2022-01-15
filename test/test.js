@@ -310,6 +310,45 @@ describe('typeis.is(mediaType, types)', function () {
   })
 })
 
+describe('typeis.normalize(type)', function () {
+  it('should return false for non-strings', function () {
+    assert.strictEqual(typeis.normalize({}), false)
+    assert.strictEqual(typeis.normalize([]), false)
+    assert.strictEqual(typeis.normalize(42), false)
+    assert.strictEqual(typeis.normalize(null), false)
+    assert.strictEqual(typeis.normalize(function () {}), false)
+  })
+
+  it('should return media type for extension', function () {
+    assert.strictEqual(typeis.normalize('json'), 'application/json')
+  })
+
+  it('should return expanded wildcard for suffix', function () {
+    assert.strictEqual(typeis.normalize('+json'), '*/*+json')
+  })
+
+  it('should pass through media type', function () {
+    assert.strictEqual(typeis.normalize('application/json'), 'application/json')
+  })
+
+  it('should pass through wildcard', function () {
+    assert.strictEqual(typeis.normalize('*/*'), '*/*')
+    assert.strictEqual(typeis.normalize('image/*'), 'image/*')
+  })
+
+  it('should return false for unmapped extension', function () {
+    assert.strictEqual(typeis.normalize('unknown'), false)
+  })
+
+  it('should expand special "urlencoded"', function () {
+    assert.strictEqual(typeis.normalize('urlencoded'), 'application/x-www-form-urlencoded')
+  })
+
+  it('should expand special "multipart"', function () {
+    assert.strictEqual(typeis.normalize('multipart'), 'multipart/*')
+  })
+})
+
 function createRequest (type) {
   return {
     headers: {
