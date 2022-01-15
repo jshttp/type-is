@@ -115,6 +115,22 @@ typeis.is(mediaType, ['application/json']) // => 'application/json'
 typeis.is(mediaType, ['html']) // => false
 ```
 
+### typeis.normalize(type)
+
+Normalize a `type` string. This works by performing the following:
+
+- If the `type` is not a string, `false` is returned.
+- If the string starts with `+` (so it is a `+suffix` shorthand like `+json`),
+  then it is expanded to contain the complete wildcard notation of `*/*+suffix`.
+- If the string contains a `/`, then it is returned as the type.
+- Else the string is assumed to be a file extension and the mapped media type is
+  returned, or `false` is there is no mapping.
+
+This includes two special mappings:
+
+- `'multipart'` -> `'multipart/*'`
+- `'urlencoded'` -> `'application/x-www-form-urlencoded'`
+
 ## Examples
 
 ### Example body parser

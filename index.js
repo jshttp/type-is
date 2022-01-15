@@ -155,7 +155,8 @@ function typeofrequest (req, types_) {
  * and are thus ensured to work.
  *
  * @param {String} type
- * @private
+ * @return {String|false|null}
+ * @public
  */
 
 function normalize (type) {
