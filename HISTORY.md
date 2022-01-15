@@ -1,7 +1,7 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.30
+  * deps: mime-types@~2.1.31
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
@@ -9,6 +9,7 @@ unreleased
     - Add extension `.cjs` to `application/node`
     - Add extension `.dbf` to `application/vnd.dbf`
     - Add extension `.m4s` to `video/iso.segment`
+    - Add extension `.mvt` to `application/vnd.mapbox-vector-tile`
     - Add extension `.mxmf` to `audio/mobile-xmf`
     - Add extension `.opus` to `audio/ogg`
     - Add extension `.rar` to `application/vnd.rar`
