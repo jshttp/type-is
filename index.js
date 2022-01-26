@@ -190,7 +190,7 @@ function normalize (type) {
  * @param {String} expected
  * @param {String} actual
  * @return {Boolean}
- * @private
+ * @public
  */
 
 function mimeMatch (expected, actual) {

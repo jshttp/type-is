@@ -115,6 +115,22 @@ typeis.is(mediaType, ['application/json']) // => 'application/json'
 typeis.is(mediaType, ['html']) // => false
 ```
 
+### typeis.match(expected, actual)
+
+Match the type string `expected` with `actual`, taking in to account wildcards.
+A wildcard can only be in the type of the subtype part of a media type and only
+in the `expected` value (as `actual` should be the real media type to match). A
+suffix can still be included even with a wildcard subtype. If an input is
+malformed, `false` will be returned.
+
+```js
+typeis.match('text/html', 'text/html') // => true
+typeis.match('*/html', 'text/html') // => true
+typeis.match('text/*', 'text/html') // => true
+typeis.match('*/*', 'text/html') // => true
+typeis.match('*/*+json', 'application/x-custom+json') // => true
+```
+
 ### typeis.normalize(type)
 
 Normalize a `type` string. This works by performing the following:
