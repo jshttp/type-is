@@ -310,6 +310,45 @@ describe('typeis.is(mediaType, types)', function () {
   })
 })
 
+describe('typeis.match(expected, actual)', function () {
+  it('should return false when expected is false', function () {
+    assert.strictEqual(typeis.match(false, 'text/html'), false)
+  })
+
+  it('should perform exact matching', function () {
+    assert.strictEqual(typeis.match('text/html', 'text/html'), true)
+    assert.strictEqual(typeis.match('text/html', 'text/plain'), false)
+    assert.strictEqual(typeis.match('text/html', 'text/xml'), false)
+    assert.strictEqual(typeis.match('text/html', 'application/html'), false)
+    assert.strictEqual(typeis.match('text/html', 'text/html+xml'), false)
+  })
+
+  it('should perform type wildcard matching', function () {
+    assert.strictEqual(typeis.match('*/html', 'text/html'), true)
+    assert.strictEqual(typeis.match('*/html', 'application/html'), true)
+    assert.strictEqual(typeis.match('*/html', 'text/xml'), false)
+    assert.strictEqual(typeis.match('*/html', 'text/html+xml'), false)
+  })
+
+  it('should perform subtype wildcard matching', function () {
+    assert.strictEqual(typeis.match('text/*', 'text/html'), true)
+    assert.strictEqual(typeis.match('text/*', 'text/xml'), true)
+    assert.strictEqual(typeis.match('text/*', 'text/html+xml'), true)
+    assert.strictEqual(typeis.match('text/*', 'application/xml'), false)
+  })
+
+  it('should perform full wildcard matching', function () {
+    assert.strictEqual(typeis.match('*/*', 'text/html'), true)
+    assert.strictEqual(typeis.match('*/*', 'text/html+xml'), true)
+    assert.strictEqual(typeis.match('*/*+xml', 'text/html+xml'), true)
+  })
+
+  it('should perform full wildcard matching with specific suffix', function () {
+    assert.strictEqual(typeis.match('*/*+xml', 'text/html+xml'), true)
+    assert.strictEqual(typeis.match('*/*+xml', 'text/html'), false)
+  })
+})
+
 describe('typeis.normalize(type)', function () {
   it('should return false for non-strings', function () {
     assert.strictEqual(typeis.normalize({}), false)
