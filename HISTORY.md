@@ -1,7 +1,7 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.31
+  * deps: mime-types@~2.1.32
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
@@ -14,6 +14,7 @@ unreleased
     - Add extension `.opus` to `audio/ogg`
     - Add extension `.rar` to `application/vnd.rar`
     - Add extension `.td` to `application/urc-targetdesc+xml`
+    - Add extension `.trig` to `application/trig`
     - Add extensions from IANA for `application/*+xml` types
     - Add `image/avif` with extension `.avif`
     - Add `image/ktx2` with extension `.ktx2`
