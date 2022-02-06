@@ -1,10 +1,11 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.32
+  * deps: mime-types@~2.1.33
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
+    - Add deprecated iWorks mime types and extensions
     - Add extension `.amr` to `audio/amr`
     - Add extension `.cjs` to `application/node`
     - Add extension `.dbf` to `application/vnd.dbf`
