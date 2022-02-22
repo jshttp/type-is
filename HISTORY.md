@@ -1,7 +1,7 @@
 unreleased
 ==========
 
-  * deps: mime-types@~2.1.33
+  * deps: mime-types@~2.1.34
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
     - Add `application/x-keepass2` with extension `.kdbx`
