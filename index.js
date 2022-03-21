@@ -214,9 +214,9 @@ function mimeMatch (expected, actual) {
   }
 
   // validate suffix wildcard
-  if (expectedParts[1].substr(0, 2) === '*+') {
+  if (expectedParts[1].slice(0, 2) === '*+') {
     return expectedParts[1].length <= actualParts[1].length + 1 &&
-      expectedParts[1].substr(1) === actualParts[1].substr(1 - expectedParts[1].length)
+      expectedParts[1].slice(1) === actualParts[1].slice(1 - expectedParts[1].length)
   }
 
   // validate subtype
