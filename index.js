@@ -259,6 +259,11 @@ function tryNormalizeType (value) {
     return null
   }
 
+  if (typeof value === 'string') {
+    // trim extra semicolon
+    value = value.replace(/;+$/, '')
+  }
+
   try {
     return normalizeType(value)
   } catch (err) {

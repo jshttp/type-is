@@ -123,6 +123,11 @@ describe('typeis(req, types)', function () {
       var req = { headers: { 'content-type': 'text/html' } }
       assert.strictEqual(typeis(req, '*/*'), null)
     })
+
+    it('should compatible extra semicolon', function () {
+      assert.strictEqual(typeis(createRequest('application/json;'), '*/*'), 'application/json')
+      assert.strictEqual(typeis(createRequest('application/json;charset=utf-8;'), '*/*'), 'application/json')
+    })
   })
 
   describe('when Content-Type: application/x-www-form-urlencoded', function () {
