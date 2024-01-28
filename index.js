@@ -236,14 +236,39 @@ function mimeMatch (expected, actual) {
  */
 
 function normalizeType (value) {
-  // parse the type
-  var type = typer.parse(value)
+  // Support passing `req-like` or `res-like` objects as argument,
+  // for backward compatibility.
+  if (typeof value === 'object') {
+    value = getcontenttype(value);
+  }
 
-  // remove the parameters
-  type.parameters = undefined
+  // Exclude parameters.
+  var index = value.indexOf(';')
+  if (index !== -1) {
+    value = value.slice(0, index)
+  }
+  // Content-type headers might use '\t' for whitespace,
+  // which is not supported by typer.parse, so we must trim.
+  value = value.trim()
+  var type = typer.parse(value)
 
   // reformat it
   return typer.format(type)
+}
+
+/**
+ * Copied from `media-typer` 0.3.0
+ */
+function getcontenttype(obj) {
+  if (typeof obj.getHeader === 'function') {
+    // res-like
+    return obj.getHeader('content-type')
+  }
+
+  if (typeof obj.headers === 'object') {
+    // req-like
+    return obj.headers && obj.headers['content-type']
+  }
 }
 
 /**
