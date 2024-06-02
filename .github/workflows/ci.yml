@@ -6,11 +6,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         name:
-        - Node.js 0.6
         - Node.js 0.8
         - Node.js 0.10
         - Node.js 0.12
@@ -31,12 +30,13 @@ jobs:
         - Node.js 15.x
         - Node.js 16.x
         - Node.js 17.x
+        - Node.js 18.x
+        - Node.js 19.x
+        - Node.js 20.x
+        - Node.js 21.x
+        - Node.js 22.x
 
         include:
-        - name: Node.js 0.6
-          node-version: "0.6"
-          npm-i: mocha@1.21.5
-          npm-rm: nyc
 
         - name: Node.js 0.8
           node-version: "0.8"
@@ -81,11 +81,11 @@ jobs:
 
         - name: Node.js 8.x
           node-version: "8.17"
-          npm-i: mocha@7.2.0
+          npm-i: mocha@7.1.2 nyc@14.1.1
 
         - name: Node.js 9.x
           node-version: "9.11"
-          npm-i: mocha@7.2.0
+          npm-i: mocha@7.1.2 nyc@14.1.1
 
         - name: Node.js 10.x
           node-version: "10.24"
@@ -97,33 +97,45 @@ jobs:
 
         - name: Node.js 12.x
           node-version: "12.22"
+          npm-i: mocha@9.2.2
 
         - name: Node.js 13.x
           node-version: "13.14"
+          npm-i: mocha@9.2.2
 
         - name: Node.js 14.x
-          node-version: "14.19"
+          node-version: "14.21"
 
         - name: Node.js 15.x
           node-version: "15.14"
 
         - name: Node.js 16.x
-          node-version: "16.14"
+          node-version: "16.20"
 
         - name: Node.js 17.x
-          node-version: "17.5"
+          node-version: "17.9"
+
+        - name: Node.js 18.x
+          node-version: "18.20"
+
+        - name: Node.js 19.x
+          node-version: "19.9"
+
+        - name: Node.js 20.x
+          node-version: "20.13"
+
+        - name: Node.js 21.x
+          node-version: "21.7"
+
+        - name: Node.js 22.x
+          node-version: "22.1"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Install Node.js ${{ matrix.node-version }}
       shell: bash -eo pipefail -l {0}
       run: |
-        if [[ "${{ matrix.node-version }}" == 0.6* ]]; then
-          sudo apt-get install g++-4.8 gcc-4.8 libssl1.0-dev
-          export CC=/usr/bin/gcc-4.8
-          export CXX=/usr/bin/g++-4.8
-        fi
         nvm install --default ${{ matrix.node-version }}
         if [[ "${{ matrix.node-version }}" == 0.* && "$(cut -d. -f2 <<< "${{ matrix.node-version }}")" -lt 10 ]]; then
           nvm install --alias=npm 0.10
@@ -139,7 +151,12 @@ jobs:
         dirname "$(nvm which ${{ matrix.node-version }})" >> "$GITHUB_PATH"
 
     - name: Configure npm
-      run: npm config set shrinkwrap false
+      run: |
+        if [[ "$(npm config get package-lock)" == "true" ]]; then
+          npm config set package-lock false
+        else
+          npm config set shrinkwrap false
+        fi
 
     - name: Remove npm module(s) ${{ matrix.npm-rm }}
       run: npm rm --silent --save-dev ${{ matrix.npm-rm }}
