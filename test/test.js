@@ -13,6 +13,11 @@ describe('typeis(req, types)', function () {
     assert.strictEqual(typeis(req, ['text/*']), 'text/html')
   })
 
+  it('should support tabs in LWS', function () {
+    var req = createRequest('text/html\t;\tcharset=utf-8')
+    assert.strictEqual(typeis(req, ['text/*']), 'text/html')
+  })
+
   it('should ignore casing', function () {
     var req = createRequest('text/HTML')
     assert.strictEqual(typeis(req, ['text/*']), 'text/html')
@@ -299,6 +304,13 @@ describe('typeis.is(mediaType, types)', function () {
 
       assert.strictEqual(typeis.is(req, ['png']), 'png')
       assert.strictEqual(typeis.is(req, ['jpeg']), false)
+    })
+
+    it('should ignore parameters in content-type header', function () {
+      var req = createRequest('application/json;\tencoding=utf-8')
+
+      assert.strictEqual(typeis.is(req, ['json']), 'json')
+      assert.strictEqual(typeis.is(req, ['text']), false)
     })
 
     it('should not check for body', function () {
