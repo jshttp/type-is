@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * Drop node <18
   * deps: mime-types@~2.1.34
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`
