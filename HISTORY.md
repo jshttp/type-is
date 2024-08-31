@@ -2,6 +2,7 @@ unreleased
 ==========
 
   * Drop node <18
+  * deps: replace media-typer with content-type
   * deps: mime-types@^3.0.0
     - Add `application/toml` with extension `.toml`
     - Add `application/ubjson` with extension `.ubj`

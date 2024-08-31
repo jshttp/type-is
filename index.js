@@ -12,7 +12,7 @@
  * @private
  */
 
-var typer = require('media-typer')
+var typer = require('content-type')
 var mime = require('mime-types')
 
 /**

@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": "jshttp/type-is",
   "dependencies": {
-    "media-typer": "0.3.0",
+    "content-type": "^1.0.5",
     "mime-types": "^3.0.0"
   },
   "devDependencies": {
@@ -34,6 +34,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --reporter spec --check-leaks --bail test/",
+    "test:debug": "mocha --reporter spec --check-leaks --inspect --inspect-brk test/",
     "test-ci": "nyc --reporter=lcovonly --reporter=text npm test",
     "test-cov": "nyc --reporter=html --reporter=text npm test"
   },
