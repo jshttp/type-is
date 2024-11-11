@@ -251,17 +251,12 @@ function normalizeType (value) {
  * Try to normalize a type and remove parameters.
  *
  * @param {string} value
- * @return {string}
+ * @return {(string|null)}
  * @private
  */
-
 function tryNormalizeType (value) {
-  if (!value) {
-    return null
-  }
-
   try {
-    return normalizeType(value)
+    return value ? normalizeType(value) : null
   } catch (err) {
     return null
   }
