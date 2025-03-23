@@ -232,19 +232,14 @@ function mimeMatch (expected, actual) {
  * Normalize a type and remove parameters.
  *
  * @param {string} value
- * @return {string}
+ * @return {(string|null)}
  * @private
  */
-
 function normalizeType (value) {
-  // parse the type
+  // Parse the type
   var type = contentType.parse(value).type
 
-  if (!typer.test(type)) {
-    return null
-  }
-
-  return type
+  return typer.test(type) ? type : null
 }
 
 /**
