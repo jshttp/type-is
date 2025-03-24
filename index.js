@@ -116,27 +116,19 @@ function hasbody (req) {
  *
  *     this.is('html'); // => false
  *
- * @param {String|Array} types...
- * @return {String|false|null}
+ * @param {Object} req
+ * @param {(String|Array)} types...
+ * @return {(String|false|null)}
  * @public
  */
 
 function typeofrequest (req, types_) {
-  var types = types_
-
   // no body
-  if (!hasbody(req)) {
-    return null
-  }
-
+  if (!hasbody(req)) return null
   // support flattened arguments
-  if (arguments.length > 2) {
-    types = new Array(arguments.length - 1)
-    for (var i = 0; i < types.length; i++) {
-      types[i] = arguments[i + 1]
-    }
-  }
-
+  var types = arguments.length > 2
+    ? Array.prototype.slice.call(arguments, 1)
+    : types_
   // request content type
   var value = req.headers['content-type']
 
