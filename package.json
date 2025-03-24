@@ -11,7 +11,7 @@
   "dependencies": {
     "content-type": "^1.0.5",
     "media-typer": "^1.1.0",
-    "mime-types": "^3.0.0"
+    "mime-types": "^3.0.1"
   },
   "devDependencies": {
     "eslint": "7.32.0",
