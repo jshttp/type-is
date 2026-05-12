@@ -10,10 +10,6 @@ Infer the content-type of a request.
 
 ## Install
 
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
-
 ```sh
 $ npm install type-is
 ```
@@ -21,16 +17,16 @@ $ npm install type-is
 ## API
 
 ```js
-var http = require('http')
-var typeis = require('type-is')
+import { createServer } from "http";
+import * as typeis from "type-is";
 
 http.createServer(function (req, res) {
-  var istext = typeis(req, ['text/*'])
-  res.end('you ' + (istext ? 'sent' : 'did not send') + ' me text')
-})
+  var istext = typeis.request(req, ["text/*"]);
+  res.end("you " + (istext ? "sent" : "did not send") + " me text");
+});
 ```
 
-### typeis(request, types)
+### request(req, types)
 
 Checks if the `request` is one of the `types`. If the request has no body,
 even if there is a `Content-Type` header, then `null` is returned. If the
@@ -55,12 +51,12 @@ Some examples to illustrate the inputs and returned value:
 ```js
 // req.headers.content-type = 'application/json'
 
-typeis(req, ['json']) // => 'json'
-typeis(req, ['html', 'json']) // => 'json'
-typeis(req, ['application/*']) // => 'application/json'
-typeis(req, ['application/json']) // => 'application/json'
+request(req, ["json"]); // => 'json'
+request(req, ["html", "json"]); // => 'json'
+request(req, ["application/*"]); // => 'application/json'
+request(req, ["application/json"]); // => 'application/json'
 
-typeis(req, ['html']) // => false
+request(req, ["html"]); // => false
 ```
 
 ### typeis.hasBody(request)
@@ -76,9 +72,9 @@ indicates that there is data to read from the Node.js request stream.
 if (typeis.hasBody(req)) {
   // read the body, since there is one
 
-  req.on('data', function (chunk) {
+  req.on("data", function (chunk) {
     // ...
-  })
+  });
 }
 ```
 
@@ -105,14 +101,14 @@ Each type in the `types` array can be one of the following:
 Some examples to illustrate the inputs and returned value:
 
 ```js
-var mediaType = 'application/json'
+var mediaType = "application/json";
 
-typeis.is(mediaType, ['json']) // => 'json'
-typeis.is(mediaType, ['html', 'json']) // => 'json'
-typeis.is(mediaType, ['application/*']) // => 'application/json'
-typeis.is(mediaType, ['application/json']) // => 'application/json'
+typeis.is(mediaType, ["json"]); // => 'json'
+typeis.is(mediaType, ["html", "json"]); // => 'json'
+typeis.is(mediaType, ["application/*"]); // => 'application/json'
+typeis.is(mediaType, ["application/json"]); // => 'application/json'
 
-typeis.is(mediaType, ['html']) // => false
+typeis.is(mediaType, ["html"]); // => false
 ```
 
 ### typeis.match(expected, actual)
@@ -124,11 +120,11 @@ suffix can still be included even with a wildcard subtype. If an input is
 malformed, `false` will be returned.
 
 ```js
-typeis.match('text/html', 'text/html') // => true
-typeis.match('*/html', 'text/html') // => true
-typeis.match('text/*', 'text/html') // => true
-typeis.match('*/*', 'text/html') // => true
-typeis.match('*/*+json', 'application/x-custom+json') // => true
+typeis.match("text/html", "text/html"); // => true
+typeis.match("*/html", "text/html"); // => true
+typeis.match("text/*", "text/html"); // => true
+typeis.match("*/*", "text/html"); // => true
+typeis.match("*/*+json", "application/x-custom+json"); // => true
 ```
 
 ### typeis.normalize(type)
@@ -152,33 +148,33 @@ This includes two special mappings:
 ### Example body parser
 
 ```js
-var express = require('express')
-var typeis = require('type-is')
+var express = require("express");
+var typeis = require("type-is");
 
-var app = express()
+var app = express();
 
-app.use(function bodyParser (req, res, next) {
+app.use(function bodyParser(req, res, next) {
   if (!typeis.hasBody(req)) {
-    return next()
+    return next();
   }
 
-  switch (typeis(req, ['urlencoded', 'json', 'multipart'])) {
-    case 'urlencoded':
+  switch (typeis.request(req, ["urlencoded", "json", "multipart"])) {
+    case "urlencoded":
       // parse urlencoded body
-      throw new Error('implement urlencoded body parsing')
-    case 'json':
+      throw new Error("implement urlencoded body parsing");
+    case "json":
       // parse json body
-      throw new Error('implement json body parsing')
-    case 'multipart':
+      throw new Error("implement json body parsing");
+    case "multipart":
       // parse multipart body
-      throw new Error('implement multipart body parsing')
+      throw new Error("implement multipart body parsing");
     default:
       // 415 error code
-      res.statusCode = 415
-      res.end()
-      break
+      res.statusCode = 415;
+      res.end();
+      break;
   }
-})
+});
 ```
 
 ## License
