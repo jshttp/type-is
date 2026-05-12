@@ -42,11 +42,16 @@ module.exports.match = mimeMatch
  */
 
 function typeis (value, types_) {
+  // Backward compatibility. TODO: Remove.
+  if (value && typeof value === 'object') {
+    value = value.headers['content-type']
+  }
+
   var i
   var types = types_
 
   // remove parameters and normalize
-  var val = tryNormalizeType(value)
+  var val = normalizeType(value)
 
   // no type or invalid
   if (!val) {
@@ -228,23 +233,8 @@ function mimeMatch (expected, actual) {
  * @private
  */
 function normalizeType (value) {
-  // Parse the type
-  var type = contentType.parse(value).type
+  if (!value) return null
+  var type = contentType.parse(value, { parameters: false }).type
 
   return typer.test(type) ? type : null
-}
-
-/**
- * Try to normalize a type and remove parameters.
- *
- * @param {string} value
- * @return {(string|null)}
- * @private
- */
-function tryNormalizeType (value) {
-  try {
-    return value ? normalizeType(value) : null
-  } catch (err) {
-    return null
-  }
 }
