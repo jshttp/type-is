@@ -32,8 +32,6 @@
     "node": ">= 18"
   },
   "files": [
-    "LICENSE",
-    "HISTORY.md",
     "index.js"
   ],
   "scripts": {
