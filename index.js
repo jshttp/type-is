@@ -168,6 +168,8 @@ function normalize (type) {
       return 'application/x-www-form-urlencoded'
     case 'multipart':
       return 'multipart/*'
+    case 'xml':
+      return '*/xml'
   }
 
   if (type[0] === '+') {
