@@ -29,6 +29,17 @@ describe('typeis(req, types)', function () {
     assert.strictEqual(typeis(req, [undefined, null, true, function () {}]), false)
   })
 
+  it('should not throw on a Content-Type with an empty type token', function () {
+    // A Content-Type header where the portion before the first ";" (after
+    // trimming optional whitespace) is empty - e.g. ";" or " " - causes
+    // content-type@2's lenient parse() to return type: "". media-typer's
+    // test() then throws on that falsy input instead of returning false,
+    // and normalizeType() no longer catches it (unlike 1.x's
+    // tryNormalizeType, which wrapped this in a try/catch).
+    var req = createRequest(';')
+    assert.strictEqual(typeis(req, ['urlencoded']), false)
+  })
+
   describe('when no body is given', function () {
     it('should return null', function () {
       var req = { headers: {} }

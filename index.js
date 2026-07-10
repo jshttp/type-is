@@ -234,7 +234,11 @@ function mimeMatch (expected, actual) {
  */
 function normalizeType (value) {
   if (!value) return null
-  var type = contentType.parse(value, { parameters: false }).type
 
-  return typer.test(type) ? type : null
+  try {
+    var type = contentType.parse(value, { parameters: false }).type
+    return typer.test(type) ? type : null
+  } catch (err) {
+    return null
+  }
 }
