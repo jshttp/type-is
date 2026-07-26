@@ -148,6 +148,23 @@ describe('typeis(req, types)', function () {
       assert.strictEqual(typeis(req, ['multipart']), 'multipart')
     })
   })
+
+  describe('when Content-Type: text/xml', function () {
+    it('should match "xml"', function () {
+      var req = createRequest('text/xml')
+
+      assert.strictEqual(typeis(req, ['xml']), 'xml')
+      assert.strictEqual(typeis(req, ['json', 'xml']), 'xml')
+    })
+  })
+
+  describe('when Content-Type: application/xml', function () {
+    it('should match "xml"', function () {
+      var req = createRequest('application/xml')
+
+      assert.strictEqual(typeis(req, ['xml']), 'xml')
+    })
+  })
 })
 
 describe('typeis.hasBody(req)', function () {
@@ -293,6 +310,19 @@ describe('typeis.is(mediaType, types)', function () {
     })
   })
 
+  describe('when media type is text/xml', function () {
+    it('should match "xml"', function () {
+      assert.strictEqual(typeis.is('text/xml', ['xml']), 'xml')
+      assert.strictEqual(typeis.is('text/xml', ['json', 'xml']), 'xml')
+    })
+  })
+
+  describe('when media type is application/xml', function () {
+    it('should match "xml"', function () {
+      assert.strictEqual(typeis.is('application/xml', ['xml']), 'xml')
+    })
+  })
+
   describe('when give request object', function () {
     it('should use the content-type header', function () {
       var req = createRequest('image/png')
@@ -385,6 +415,10 @@ describe('typeis.normalize(type)', function () {
 
   it('should expand special "multipart"', function () {
     assert.strictEqual(typeis.normalize('multipart'), 'multipart/*')
+  })
+
+  it('should expand special "xml"', function () {
+    assert.strictEqual(typeis.normalize('xml'), '*/xml')
   })
 })
 

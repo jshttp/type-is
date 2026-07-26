@@ -142,10 +142,11 @@ Normalize a `type` string. This works by performing the following:
 - Else the string is assumed to be a file extension and the mapped media type is
   returned, or `false` is there is no mapping.
 
-This includes two special mappings:
+This includes three special mappings:
 
 - `'multipart'` -> `'multipart/*'`
 - `'urlencoded'` -> `'application/x-www-form-urlencoded'`
+- `'xml'` -> `'*/xml'` (matches `application/xml`, `text/xml`, etc.)
 
 ## Examples
 

@@ -30,7 +30,7 @@ module.exports.match = mimeMatch
 /**
  * Compare a `value` content-type with `types`.
  * Each `type` can be an extension like `html`,
- * a special shortcut like `multipart` or `urlencoded`,
+ * a special shortcut like `multipart`, `urlencoded`, or `xml`,
  * or a mime type.
  *
  * If no types match, `false` is returned.
@@ -168,6 +168,9 @@ function normalize (type) {
       return 'application/x-www-form-urlencoded'
     case 'multipart':
       return 'multipart/*'
+    case 'xml':
+      // Match both application/xml and text/xml (and any */xml)
+      return '*/xml'
   }
 
   if (type[0] === '+') {
