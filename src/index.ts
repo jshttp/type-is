@@ -45,15 +45,21 @@ export function hasBody(req: RequestLike): boolean {
   );
 }
 
-export const DEFAULT_EXTENSIONS: Record<string, string | string[]> =
-  Object.freeze({
-    json: "application/json",
-    urlencoded: "application/x-www-form-urlencoded",
-    multipart: "multipart/*",
-  });
+export function DEFAULT_LOOKUP(value: string): string | string[] | undefined {
+  switch (value) {
+    case "urlencoded":
+      return "application/x-www-form-urlencoded";
+    case "multipart":
+      return "multipart/*";
+    case "json":
+      return "application/json";
+    default:
+      return undefined;
+  }
+}
 
 export interface NormalizeOptions {
-  extensions?: Record<string, string | string[]>;
+  lookup?: (value: string) => string | string[] | undefined;
 }
 
 export function normalize(
@@ -62,10 +68,8 @@ export function normalize(
 ): string | string[] {
   if (value.includes("/")) return value;
   if (value.startsWith("+")) return `*/*${value}`;
-  const extensions = options?.extensions ?? DEFAULT_EXTENSIONS;
-  return Object.prototype.hasOwnProperty.call(extensions, value)
-    ? extensions[value]
-    : value;
+  const lookup = options?.lookup ?? DEFAULT_LOOKUP;
+  return lookup(value) ?? value;
 }
 
 /**
@@ -167,4 +171,12 @@ export function is(
 
     return undefined;
   };
+}
+
+export class TypeIs {
+  constructor(types: string[], options?: NormalizeOptions) {
+    this.matcher = is(types, options);
+  }
+
+  private matcher: (value: string) => string | undefined;
 }
