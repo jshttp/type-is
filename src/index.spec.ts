@@ -203,6 +203,26 @@ describe("is(types)", () => {
     assert.throws(() => is(["text/html/"]), /Invalid mime type/);
   });
 
+  describe("with extensions option", () => {
+    it("should match a string mapping", () => {
+      const matches = is(["yaml"], {
+        extensions: { yaml: "application/yaml" },
+      });
+
+      assert.strictEqual(matches("application/yaml"), "application/yaml");
+      assert.strictEqual(matches("text/yaml"), undefined);
+    });
+
+    it("should match a string array mapping", () => {
+      const matches = is(["yaml"], {
+        extensions: { yaml: ["application/yaml", "text/yaml"] },
+      });
+
+      assert.strictEqual(matches("application/yaml"), "application/yaml");
+      assert.strictEqual(matches("text/yaml"), "text/yaml");
+    });
+  });
+
   describe("given one type", () => {
     it("should return the type or undefined", () => {
       assert.strictEqual(is(["image/png"])("image/png"), "image/png");

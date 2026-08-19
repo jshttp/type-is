@@ -54,6 +54,20 @@ describe("is", () => {
   });
 });
 
+describe("is one shot", () => {
+  bench("exact match", () => {
+    is(["application/json"])("application/json");
+  });
+
+  bench("wildcard match", () => {
+    is(["text/*", "application/*"])("application/json");
+  });
+
+  bench("suffix match", () => {
+    is(["application/*+json"])("application/vnd.api+json");
+  });
+});
+
 describe("normalize", () => {
   bench("mime type", () => {
     normalize("application/json");
