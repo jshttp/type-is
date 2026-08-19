@@ -25,6 +25,7 @@
     "dist/"
   ],
   "scripts": {
+    "bench": "vitest bench",
     "build": "ts-scripts build",
     "format": "ts-scripts format",
     "prepare": "ts-scripts install && npm run build",
