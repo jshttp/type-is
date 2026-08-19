@@ -106,7 +106,7 @@ The default extensions is kept minimal:
 - `'multipart'` -> `'multipart/*'`
 - `'urlencoded'` -> `'application/x-www-form-urlencoded'`
 
-You can pass an object of `{ extensions: string | string[] }` to provide additional mappings.
+You can pass an options object of `{ lookup: (value: string) => string | string[] | undefined }` to provide additional mappings, e.g. [`mime.lookup`](https://github.com/jshttp/mime-types#mimelookuppath).
 
 ## Examples
 
