@@ -18,51 +18,59 @@ $ npm install type-is
 
 ```js
 import { createServer } from "http";
-import * as typeis from "type-is";
+import { TypeIs } from "type-is";
+
+const isText = new TypeIs(["text/*"]);
 
 http.createServer(function (req, res) {
-  var istext = typeis.request(req, ["text/*"]);
-  res.end("you " + (istext ? "sent" : "did not send") + " me text");
+  res.end(
+    "you " + (isText.request(req) ? "sent" : "did not send") + " me text",
+  );
 });
 ```
 
-### request(req, types)
+### new TypeIs(types[, options])
 
-Checks if the `request` is one of the `types`. If the request has no body,
-even if there is a `Content-Type` header, then `null` is returned. If the
-`Content-Type` header is invalid or does not matches any of the `types`, then
-`false` is returned. Otherwise, a string of the type that matched is returned.
-
-The `request` argument is expected to be a Node.js HTTP request. The `types`
-argument is an array of type strings.
+Creates a reusable content type matcher. The optional `options` object accepts a `lookup` function for resolving shorthand types.
 
 Each type in the `types` array can be one of the following:
 
-- A file extension name such as `json`. This name will be returned if matched.
 - A mime type such as `application/json`.
 - A mime type with a wildcard such as `*/*` or `*/json` or `application/*`.
-  The full mime type will be returned if matched.
-- A suffix such as `+json`. This can be combined with a wildcard such as
-  `*/vnd+json` or `application/*+json`. The full mime type will be returned
-  if matched.
+- A suffix such as `+json`. This can be combined with a wildcard such as `*/vnd+json` or `application/*+json`.
+- A configured shorthand such as `multipart` or `urlencoded`.
+- Any of the above with parameters that must also match, such as `application/json; charset=utf-8`.
 
-Some examples to illustrate the inputs and returned value:
+### typeIs.is(value)
+
+Checks a `content-type` value and returns the first configured type that matches, or `undefined` when none match.
+
+```js
+const isJson = new TypeIs(["application/json", "application/*+json"]);
+
+isJson.is("application/json"); // => 'application/json'
+isJson.is("application/vnd.api+json"); // => 'application/*+json'
+isJson.is("text/html"); // => undefined
+```
+
+### typeIs.request(request)
+
+Checks a request against the configured types. If the request has no body, even if there is a `Content-Type` header, then `undefined` is returned. Otherwise it uses `is` to check the `content-type` header.
 
 ```js
 // req.headers.content-type = 'application/json'
 
-request(req, ["json"]); // => 'json'
-request(req, ["html", "json"]); // => 'json'
-request(req, ["application/*"]); // => 'application/json'
-request(req, ["application/json"]); // => 'application/json'
+new TypeIs(["json"]).request(req); // => 'application/json'
+new TypeIs(["html", "json"]).request(req); // => 'application/json'
+new TypeIs(["application/*"]).request(req); // => 'application/*'
+new TypeIs(["application/json"]).request(req); // => 'application/json'
 
-request(req, ["html"]); // => false
+new TypeIs(["html"]).request(req); // => undefined
 ```
 
-### typeis.hasBody(request)
+### hasBody(request)
 
-Returns a Boolean if the given `request` has a body, regardless of the
-`Content-Type` header.
+Returns true if the given `request` has a body based on the HTTP headers provided.
 
 Having a body has no relation to how large the body is (it may be 0 bytes).
 This is similar to how file existence works. If a body does exist, then this
@@ -78,94 +86,58 @@ if (typeis.hasBody(req)) {
 }
 ```
 
-### typeis.is(mediaType, types)
+### match(expected)
 
-Checks if the `mediaType` is one of the `types`. If the `mediaType` is invalid
-or does not matches any of the `types`, then `false` is returned. Otherwise, a
-string of the type that matched is returned.
-
-The `mediaType` argument is expected to be a
-[media type](https://tools.ietf.org/html/rfc6838) string. The `types` argument
-is an array of type strings.
-
-Each type in the `types` array can be one of the following:
-
-- A file extension name such as `json`. This name will be returned if matched.
-- A mime type such as `application/json`.
-- A mime type with a wildcard such as `*/*` or `*/json` or `application/*`.
-  The full mime type will be returned if matched.
-- A suffix such as `+json`. This can be combined with a wildcard such as
-  `*/vnd+json` or `application/*+json`. The full mime type will be returned
-  if matched.
-
-Some examples to illustrate the inputs and returned value:
+Compile the type string `expected` into a function that matches a MIME type.
 
 ```js
-var mediaType = "application/json";
-
-typeis.is(mediaType, ["json"]); // => 'json'
-typeis.is(mediaType, ["html", "json"]); // => 'json'
-typeis.is(mediaType, ["application/*"]); // => 'application/json'
-typeis.is(mediaType, ["application/json"]); // => 'application/json'
-
-typeis.is(mediaType, ["html"]); // => false
+typeis.match("text/html")("text/html"); // => true
+typeis.match("*/html")("text/html"); // => true
+typeis.match("text/*")("text/html"); // => true
+typeis.match("*/*")("text/html"); // => true
+typeis.match("*/*+json")("application/x-custom+json"); // => true
 ```
 
-### typeis.match(expected, actual)
-
-Match the type string `expected` with `actual`, taking in to account wildcards.
-A wildcard can only be in the type of the subtype part of a media type and only
-in the `expected` value (as `actual` should be the real media type to match). A
-suffix can still be included even with a wildcard subtype. If an input is
-malformed, `false` will be returned.
-
-```js
-typeis.match("text/html", "text/html"); // => true
-typeis.match("*/html", "text/html"); // => true
-typeis.match("text/*", "text/html"); // => true
-typeis.match("*/*", "text/html"); // => true
-typeis.match("*/*+json", "application/x-custom+json"); // => true
-```
-
-### typeis.normalize(type)
+### normalize(type)
 
 Normalize a `type` string. This works by performing the following:
 
-- If the `type` is not a string, `false` is returned.
-- If the string starts with `+` (so it is a `+suffix` shorthand like `+json`),
-  then it is expanded to contain the complete wildcard notation of `*/*+suffix`.
 - If the string contains a `/`, then it is returned as the type.
-- Else the string is assumed to be a file extension and the mapped media type is
-  returned, or `false` is there is no mapping.
+- If the string starts with `+` (so it is a `+suffix` shorthand like `+json`), then it is expanded to contain the complete wildcard notation of `*/*+suffix`.
+- Else the string is assumed to be a file extension and the mapped media type is returned, or the original input if there is no mapping.
 
-This includes two special mappings:
+The default extensions is kept minimal:
 
+- `'json'` -> `'application/json'`
 - `'multipart'` -> `'multipart/*'`
 - `'urlencoded'` -> `'application/x-www-form-urlencoded'`
+
+You can pass an options object of `{ lookup: (value: string) => string | string[] | undefined }` to provide additional mappings, e.g. [`mime.lookup`](https://github.com/jshttp/mime-types#mimelookuppath).
 
 ## Examples
 
 ### Example body parser
 
 ```js
-var express = require("express");
-var typeis = require("type-is");
+const express = require("express");
+const { TypeIs, hasBody } = require("type-is");
 
-var app = express();
+const app = express();
+const typeIs = new TypeIs(["urlencoded", "json", "multipart"]);
 
 app.use(function bodyParser(req, res, next) {
-  if (!typeis.hasBody(req)) {
+  if (!hasBody(req)) {
     return next();
   }
 
-  switch (typeis.request(req, ["urlencoded", "json", "multipart"])) {
-    case "urlencoded":
+  switch (typeIs.request(req)) {
+    case "application/x-www-form-urlencoded":
       // parse urlencoded body
       throw new Error("implement urlencoded body parsing");
-    case "json":
+    case "application/json":
       // parse json body
       throw new Error("implement json body parsing");
-    case "multipart":
+    case "multipart/*":
       // parse multipart body
       throw new Error("implement multipart body parsing");
     default:
