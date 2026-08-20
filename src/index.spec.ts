@@ -1,53 +1,56 @@
 import { describe, it, assert } from "vitest";
-import { is, request, hasBody, normalize, match } from "./index.js";
+import { TypeIs, hasBody, normalize, match } from "./index.js";
 
-describe("request(types)", () => {
+describe("TypeIs#request(req)", () => {
   it("should ignore params", () => {
     const req = createRequest("text/html; charset=utf-8");
-    assert.strictEqual(request(["text/*"])(req), "text/*");
+    assert.strictEqual(new TypeIs(["text/*"]).request(req), "text/*");
   });
 
   it("should ignore params LWS", () => {
     const req = createRequest("text/html ; charset=utf-8");
-    assert.strictEqual(request(["text/*"])(req), "text/*");
+    assert.strictEqual(new TypeIs(["text/*"]).request(req), "text/*");
   });
 
   it("should ignore casing", () => {
     const req = createRequest("text/HTML");
-    assert.strictEqual(request(["text/*"])(req), "text/*");
+    assert.strictEqual(new TypeIs(["text/*"]).request(req), "text/*");
   });
 
   it("should parse the content-type header", () => {
     const req = createRequest("text/html**");
-    assert.strictEqual(request(["text/*"])(req), "text/*");
+    assert.strictEqual(new TypeIs(["text/*"]).request(req), "text/*");
   });
 
   it("should reject invalid expected types", () => {
-    assert.throws(() => request(["text/html/"]), /Invalid mime type/);
+    assert.throws(() => new TypeIs(["text/html/"]), /Invalid mime type/);
   });
 
   describe("when no body is given", () => {
     it("should return undefined", () => {
       const req = { headers: {} };
 
-      assert.strictEqual(request([])(req), undefined);
-      assert.strictEqual(request(["image/*"])(req), undefined);
+      assert.strictEqual(new TypeIs([]).request(req), undefined);
+      assert.strictEqual(new TypeIs(["image/*"]).request(req), undefined);
     });
   });
 
   describe("when no content type is given", () => {
     it("should return undefined", () => {
       const req = createRequest();
-      assert.strictEqual(request([])(req), undefined);
-      assert.strictEqual(request(["image/*"])(req), undefined);
-      assert.strictEqual(request(["text/*", "image/*"])(req), undefined);
+      assert.strictEqual(new TypeIs([]).request(req), undefined);
+      assert.strictEqual(new TypeIs(["image/*"]).request(req), undefined);
+      assert.strictEqual(
+        new TypeIs(["text/*", "image/*"]).request(req),
+        undefined,
+      );
     });
   });
 
   describe("give no types", () => {
     it("should return undefined", () => {
       const req = createRequest("image/png");
-      assert.strictEqual(request([])(req), undefined);
+      assert.strictEqual(new TypeIs([]).request(req), undefined);
     });
   });
 
@@ -55,17 +58,20 @@ describe("request(types)", () => {
     it("should return the matched type or undefined", () => {
       const req = createRequest("application/json");
 
-      assert.strictEqual(request(["json"])(req), "application/json");
+      assert.strictEqual(new TypeIs(["json"]).request(req), "application/json");
       assert.strictEqual(
-        request(["application/json"])(req),
+        new TypeIs(["application/json"]).request(req),
         "application/json",
       );
-      assert.strictEqual(request(["application/*"])(req), "application/*");
-      assert.strictEqual(request(["*/json"])(req), "*/json");
+      assert.strictEqual(
+        new TypeIs(["application/*"]).request(req),
+        "application/*",
+      );
+      assert.strictEqual(new TypeIs(["*/json"]).request(req), "*/json");
 
-      assert.strictEqual(request(["image/jpeg"])(req), undefined);
-      assert.strictEqual(request(["text/*"])(req), undefined);
-      assert.strictEqual(request(["*/jpeg"])(req), undefined);
+      assert.strictEqual(new TypeIs(["image/jpeg"]).request(req), undefined);
+      assert.strictEqual(new TypeIs(["text/*"]).request(req), undefined);
+      assert.strictEqual(new TypeIs(["*/jpeg"]).request(req), undefined);
     });
   });
 
@@ -73,14 +79,31 @@ describe("request(types)", () => {
     it("should return the first match or undefined", () => {
       const req = createRequest("image/png");
 
-      assert.strictEqual(request(["text/*", "image/*"])(req), "image/*");
-      assert.strictEqual(request(["image/*", "text/*"])(req), "image/*");
-      assert.strictEqual(request(["image/*", "image/png"])(req), "image/*");
-      assert.strictEqual(request(["image/png", "image/*"])(req), "image/png");
-
-      assert.strictEqual(request(["text/*", "application/*"])(req), undefined);
       assert.strictEqual(
-        request(["text/html", "text/plain", "application/json"])(req),
+        new TypeIs(["text/*", "image/*"]).request(req),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/*", "text/*"]).request(req),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/*", "image/png"]).request(req),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/png", "image/*"]).request(req),
+        "image/png",
+      );
+
+      assert.strictEqual(
+        new TypeIs(["text/*", "application/*"]).request(req),
+        undefined,
+      );
+      assert.strictEqual(
+        new TypeIs(["text/html", "text/plain", "application/json"]).request(
+          req,
+        ),
         undefined,
       );
     });
@@ -90,37 +113,49 @@ describe("request(types)", () => {
     it("should match suffix types", () => {
       const req = createRequest("application/vnd+json");
 
-      assert.strictEqual(request(["+json"])(req), "*/*+json");
+      assert.strictEqual(new TypeIs(["+json"]).request(req), "*/*+json");
       assert.strictEqual(
-        request(["application/vnd+json"])(req),
+        new TypeIs(["application/vnd+json"]).request(req),
         "application/vnd+json",
       );
       assert.strictEqual(
-        request(["application/*+json"])(req),
+        new TypeIs(["application/*+json"]).request(req),
         "application/*+json",
       );
-      assert.strictEqual(request(["*/vnd+json"])(req), "*/vnd+json");
-      assert.strictEqual(request(["application/json"])(req), undefined);
-      assert.strictEqual(request(["text/*+json"])(req), undefined);
+      assert.strictEqual(new TypeIs(["*/vnd+json"]).request(req), "*/vnd+json");
+      assert.strictEqual(
+        new TypeIs(["application/json"]).request(req),
+        undefined,
+      );
+      assert.strictEqual(new TypeIs(["text/*+json"]).request(req), undefined);
     });
   });
 
   describe('given "*/*"', () => {
     it("should match any content-type", () => {
-      const matches = request(["*/*"]);
-      assert.strictEqual(matches(createRequest("text/html")), "*/*");
-      assert.strictEqual(matches(createRequest("text/xml")), "*/*");
-      assert.strictEqual(matches(createRequest("application/json")), "*/*");
-      assert.strictEqual(matches(createRequest("application/vnd+json")), "*/*");
+      const matches = new TypeIs(["*/*"]);
+      assert.strictEqual(matches.request(createRequest("text/html")), "*/*");
+      assert.strictEqual(matches.request(createRequest("text/xml")), "*/*");
+      assert.strictEqual(
+        matches.request(createRequest("application/json")),
+        "*/*",
+      );
+      assert.strictEqual(
+        matches.request(createRequest("application/vnd+json")),
+        "*/*",
+      );
     });
 
     it("should not match invalid content-type", () => {
-      assert.strictEqual(request(["*/*"])(createRequest("bogus")), undefined);
+      assert.strictEqual(
+        new TypeIs(["*/*"]).request(createRequest("bogus")),
+        undefined,
+      );
     });
 
     it("should not match body-less request", () => {
       const req = { headers: { "content-type": "text/html" } };
-      assert.strictEqual(request(["*/*"])(req), undefined);
+      assert.strictEqual(new TypeIs(["*/*"]).request(req), undefined);
     });
   });
 
@@ -129,15 +164,15 @@ describe("request(types)", () => {
       const req = createRequest("application/x-www-form-urlencoded");
 
       assert.strictEqual(
-        request(["urlencoded"])(req),
+        new TypeIs(["urlencoded"]).request(req),
         "application/x-www-form-urlencoded",
       );
       assert.strictEqual(
-        request(["json", "urlencoded"])(req),
+        new TypeIs(["json", "urlencoded"]).request(req),
         "application/x-www-form-urlencoded",
       );
       assert.strictEqual(
-        request(["urlencoded", "json"])(req),
+        new TypeIs(["urlencoded", "json"]).request(req),
         "application/x-www-form-urlencoded",
       );
     });
@@ -147,14 +182,68 @@ describe("request(types)", () => {
     it('should match "multipart/*"', () => {
       const req = createRequest("multipart/form-data");
 
-      assert.strictEqual(request(["multipart/*"])(req), "multipart/*");
+      assert.strictEqual(
+        new TypeIs(["multipart/*"]).request(req),
+        "multipart/*",
+      );
     });
 
     it('should match "multipart"', () => {
       const req = createRequest("multipart/form-data");
 
-      assert.strictEqual(request(["multipart"])(req), "multipart/*");
+      assert.strictEqual(new TypeIs(["multipart"]).request(req), "multipart/*");
     });
+  });
+});
+
+describe("TypeIs#contentType(contentType)", () => {
+  it("should return the first matching type", () => {
+    const matches = new TypeIs(["text/*", "application/*", "application/json"]);
+
+    assert.strictEqual(
+      matches.contentType({ type: "application/json", parameters: {} }),
+      "application/*",
+    );
+  });
+
+  it("should return undefined when no type matches", () => {
+    const matches = new TypeIs(["text/*"]);
+
+    assert.strictEqual(
+      matches.contentType({ type: "application/json", parameters: {} }),
+      undefined,
+    );
+  });
+
+  it("should match configured parameters", () => {
+    const matches = new TypeIs(["text/html; charset=utf-8"]);
+
+    assert.strictEqual(
+      matches.contentType({
+        type: "text/html",
+        parameters: { charset: "utf-8", boundary: "example" },
+      }),
+      "text/html",
+    );
+    assert.strictEqual(
+      matches.contentType({
+        type: "text/html",
+        parameters: { charset: "iso-8859-1" },
+      }),
+      undefined,
+    );
+  });
+
+  it("should fall through a parameter mismatch", () => {
+    const matches = new TypeIs(["text/html; charset=utf-8", "text/html"]);
+
+    assert.strictEqual(
+      matches.contentType({
+        type: "text/html",
+        parameters: { charset: "iso-8859-1" },
+      }),
+      "text/html",
+    );
   });
 });
 
@@ -184,28 +273,31 @@ describe("hasBody(req)", () => {
   });
 });
 
-describe("is(types)", () => {
+describe("TypeIs#is(value)", () => {
   it("should ignore params", () => {
-    assert.strictEqual(is(["text/*"])("text/html; charset=utf-8"), "text/*");
+    assert.strictEqual(
+      new TypeIs(["text/*"]).is("text/html; charset=utf-8"),
+      "text/*",
+    );
   });
 
   it("should ignore casing", () => {
-    assert.strictEqual(is(["text/*"])("text/HTML"), "text/*");
+    assert.strictEqual(new TypeIs(["text/*"]).is("text/HTML"), "text/*");
   });
 
   it("should match configured parameters", () => {
-    const matches = is(["text/html; charset=utf-8"]);
-    assert.strictEqual(matches("text/html; charset=utf-8"), "text/html");
-    assert.strictEqual(matches("text/html; charset=iso-8859-1"), undefined);
+    const matches = new TypeIs(["text/html; charset=utf-8"]);
+    assert.strictEqual(matches.is("text/html; charset=utf-8"), "text/html");
+    assert.strictEqual(matches.is("text/html; charset=iso-8859-1"), undefined);
   });
 
   it("should not match invalid type", () => {
-    assert.throws(() => is(["text/html/"]), /Invalid mime type/);
+    assert.throws(() => new TypeIs(["text/html/"]), /Invalid mime type/);
   });
 
   describe("with lookup option", () => {
     it("should match a string mapping", () => {
-      const matches = is(["yaml"], {
+      const matches = new TypeIs(["yaml"], {
         lookup: (value: string) => {
           switch (value) {
             case "yaml":
@@ -216,12 +308,12 @@ describe("is(types)", () => {
         },
       });
 
-      assert.strictEqual(matches("application/yaml"), "application/yaml");
-      assert.strictEqual(matches("text/yaml"), undefined);
+      assert.strictEqual(matches.is("application/yaml"), "application/yaml");
+      assert.strictEqual(matches.is("text/yaml"), undefined);
     });
 
     it("should match a string array mapping", () => {
-      const matches = is(["yaml"], {
+      const matches = new TypeIs(["yaml"], {
         lookup: (value: string) => {
           switch (value) {
             case "yaml":
@@ -232,39 +324,53 @@ describe("is(types)", () => {
         },
       });
 
-      assert.strictEqual(matches("application/yaml"), "application/yaml");
-      assert.strictEqual(matches("text/yaml"), "text/yaml");
+      assert.strictEqual(matches.is("application/yaml"), "application/yaml");
+      assert.strictEqual(matches.is("text/yaml"), "text/yaml");
     });
   });
 
   describe("given one type", () => {
     it("should return the type or undefined", () => {
-      assert.strictEqual(is(["image/png"])("image/png"), "image/png");
-      assert.strictEqual(is(["image/*"])("image/png"), "image/*");
-      assert.strictEqual(is(["*/png"])("image/png"), "*/png");
+      assert.strictEqual(
+        new TypeIs(["image/png"]).is("image/png"),
+        "image/png",
+      );
+      assert.strictEqual(new TypeIs(["image/*"]).is("image/png"), "image/*");
+      assert.strictEqual(new TypeIs(["*/png"]).is("image/png"), "*/png");
 
-      assert.strictEqual(is(["image/jpeg"])("image/png"), undefined);
-      assert.strictEqual(is(["text/*"])("image/png"), undefined);
-      assert.strictEqual(is(["*/jpeg"])("image/png"), undefined);
+      assert.strictEqual(new TypeIs(["image/jpeg"]).is("image/png"), undefined);
+      assert.strictEqual(new TypeIs(["text/*"]).is("image/png"), undefined);
+      assert.strictEqual(new TypeIs(["*/jpeg"]).is("image/png"), undefined);
     });
   });
 
   describe("given multiple types", () => {
     it("should return the first match or undefined", () => {
-      assert.strictEqual(is(["text/*", "image/*"])("image/png"), "image/*");
-      assert.strictEqual(is(["image/*", "text/*"])("image/png"), "image/*");
-      assert.strictEqual(is(["image/*", "image/png"])("image/png"), "image/*");
       assert.strictEqual(
-        is(["image/png", "image/*"])("image/png"),
+        new TypeIs(["text/*", "image/*"]).is("image/png"),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/*", "text/*"]).is("image/png"),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/*", "image/png"]).is("image/png"),
+        "image/*",
+      );
+      assert.strictEqual(
+        new TypeIs(["image/png", "image/*"]).is("image/png"),
         "image/png",
       );
 
       assert.strictEqual(
-        is(["text/*", "application/*"])("image/png"),
+        new TypeIs(["text/*", "application/*"]).is("image/png"),
         undefined,
       );
       assert.strictEqual(
-        is(["text/html", "text/plain", "application/json"])("image/png"),
+        new TypeIs(["text/html", "text/plain", "application/json"]).is(
+          "image/png",
+        ),
         undefined,
       );
     });
@@ -272,25 +378,28 @@ describe("is(types)", () => {
 
   describe("given +suffix", () => {
     it("should match suffix types", () => {
-      assert.strictEqual(is(["+json"])("application/vnd+json"), "*/*+json");
       assert.strictEqual(
-        is(["application/vnd+json"])("application/vnd+json"),
+        new TypeIs(["+json"]).is("application/vnd+json"),
+        "*/*+json",
+      );
+      assert.strictEqual(
+        new TypeIs(["application/vnd+json"]).is("application/vnd+json"),
         "application/vnd+json",
       );
       assert.strictEqual(
-        is(["application/*+json"])("application/vnd+json"),
+        new TypeIs(["application/*+json"]).is("application/vnd+json"),
         "application/*+json",
       );
       assert.strictEqual(
-        is(["*/vnd+json"])("application/vnd+json"),
+        new TypeIs(["*/vnd+json"]).is("application/vnd+json"),
         "*/vnd+json",
       );
       assert.strictEqual(
-        is(["application/json"])("application/vnd+json"),
+        new TypeIs(["application/json"]).is("application/vnd+json"),
         undefined,
       );
       assert.strictEqual(
-        is(["text/*+json"])("application/vnd+json"),
+        new TypeIs(["text/*+json"]).is("application/vnd+json"),
         undefined,
       );
     });
@@ -298,21 +407,21 @@ describe("is(types)", () => {
 
   describe('given "*/*"', () => {
     it("should match any media type", () => {
-      assert.strictEqual(is(["*/*"])("text/html"), "*/*");
-      assert.strictEqual(is(["*/*"])("text/xml"), "*/*");
-      assert.strictEqual(is(["*/*"])("application/json"), "*/*");
-      assert.strictEqual(is(["*/*"])("application/vnd+json"), "*/*");
+      assert.strictEqual(new TypeIs(["*/*"]).is("text/html"), "*/*");
+      assert.strictEqual(new TypeIs(["*/*"]).is("text/xml"), "*/*");
+      assert.strictEqual(new TypeIs(["*/*"]).is("application/json"), "*/*");
+      assert.strictEqual(new TypeIs(["*/*"]).is("application/vnd+json"), "*/*");
     });
 
     it("should not match invalid media type", () => {
-      assert.strictEqual(is(["*/*"])("bogus"), undefined);
+      assert.strictEqual(new TypeIs(["*/*"]).is("bogus"), undefined);
     });
   });
 
   describe("when media type is application/x-www-form-urlencoded", () => {
     it('should match "urlencoded"', () => {
       assert.strictEqual(
-        is(["urlencoded"])("application/x-www-form-urlencoded"),
+        new TypeIs(["urlencoded"]).is("application/x-www-form-urlencoded"),
         "application/x-www-form-urlencoded",
       );
     });
@@ -321,14 +430,14 @@ describe("is(types)", () => {
   describe("when media type is multipart/form-data", () => {
     it('should match "multipart/*"', () => {
       assert.strictEqual(
-        is(["multipart/*"])("multipart/form-data"),
+        new TypeIs(["multipart/*"]).is("multipart/form-data"),
         "multipart/*",
       );
     });
 
     it('should match "multipart"', () => {
       assert.strictEqual(
-        is(["multipart"])("multipart/form-data"),
+        new TypeIs(["multipart"]).is("multipart/form-data"),
         "multipart/*",
       );
     });

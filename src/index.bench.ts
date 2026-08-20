@@ -1,5 +1,5 @@
 import { bench, describe } from "vitest";
-import { hasBody, is, match, request, normalize } from "./index.js";
+import { TypeIs, hasBody, match, normalize } from "./index.js";
 
 describe("request", () => {
   const req = {
@@ -10,11 +10,11 @@ describe("request", () => {
   };
 
   bench("exact match", () => {
-    request(["application/json"])(req);
+    new TypeIs(["application/json"]).request(req);
   });
 
   bench("wildcard match", () => {
-    request(["text/*", "application/*"])(req);
+    new TypeIs(["text/*", "application/*"]).request(req);
   });
 });
 
@@ -37,34 +37,34 @@ describe("hasBody", () => {
 });
 
 describe("is", () => {
-  const exact = is(["application/json"]);
-  const wildcard = is(["text/*", "application/*"]);
-  const suffix = is(["application/*+json"]);
+  const exact = new TypeIs(["application/json"]);
+  const wildcard = new TypeIs(["text/*", "application/*"]);
+  const suffix = new TypeIs(["application/*+json"]);
 
   bench("exact match", () => {
-    exact("application/json");
+    exact.is("application/json");
   });
 
   bench("wildcard match", () => {
-    wildcard("application/json");
+    wildcard.is("application/json");
   });
 
   bench("suffix match", () => {
-    suffix("application/vnd.api+json");
+    suffix.is("application/vnd.api+json");
   });
 });
 
 describe("is one shot", () => {
   bench("exact match", () => {
-    is(["application/json"])("application/json");
+    new TypeIs(["application/json"]).is("application/json");
   });
 
   bench("wildcard match", () => {
-    is(["text/*", "application/*"])("application/json");
+    new TypeIs(["text/*", "application/*"]).is("application/json");
   });
 
   bench("suffix match", () => {
-    is(["application/*+json"])("application/vnd.api+json");
+    new TypeIs(["application/*+json"]).is("application/vnd.api+json");
   });
 });
 

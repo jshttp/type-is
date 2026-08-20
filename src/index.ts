@@ -5,33 +5,13 @@
  * MIT Licensed
  */
 
-import { parse } from "content-type";
+import { parse, ContentType } from "content-type";
 
 /**
  * Node.js HTTP request shape.
  */
 export interface RequestLike {
   headers: Record<string, string | string[] | undefined>;
-}
-
-/**
- * Check if the incoming request contains the "Content-Type" header field, and
- * it contains any of the given mime `type`s. If there is no request body or
- * content type, `false` is returned. Otherwise, it returns the first `type`
- * that matches.
- */
-export function request(
-  types: string[],
-): (req: RequestLike) => string | undefined {
-  const isType = is(types);
-
-  return (req: RequestLike): string | undefined => {
-    if (!hasBody(req)) return;
-    const header = req.headers["content-type"];
-    if (!header) return;
-    const value = Array.isArray(header) ? header[0] : header;
-    return isType(value);
-  };
 }
 
 /**
@@ -119,48 +99,70 @@ interface Pattern {
   key: string;
   match: (value: string) => boolean;
   parameters: Record<string, string>;
+  hasParameters: boolean;
 }
 
-/**
- * Compile a list of expected mime types into a reusable matcher.
- */
-export function is(
-  types: string[],
-  options?: NormalizeOptions,
-): (value: string) => string | undefined {
-  let hasParameters = false;
-  const patterns: Pattern[] = [];
+export class TypeIs {
+  private readonly hasParameters: boolean = false;
+  private readonly patterns: Pattern[] = [];
 
-  for (const t of types) {
-    const contentType = parse(t);
-    hasParameters ||= Object.keys(contentType.parameters).length > 0;
-    const type = normalize(contentType.type, options);
+  /**
+   * Compile a list of expected mime types into a reusable matcher.
+   */
+  constructor(types: readonly string[], options?: NormalizeOptions) {
+    for (const t of types) {
+      const contentType = parse(t);
+      const hasParameters = Object.keys(contentType.parameters).length > 0;
+      const type = normalize(contentType.type, options);
 
-    if (Array.isArray(type)) {
-      for (const t of type) {
-        patterns.push({
-          key: t,
-          match: match(t),
+      this.hasParameters ||= hasParameters;
+
+      if (Array.isArray(type)) {
+        for (const t of type) {
+          this.patterns.push({
+            key: t,
+            match: match(t),
+            parameters: contentType.parameters,
+            hasParameters,
+          });
+        }
+      } else {
+        this.patterns.push({
+          key: type,
+          match: match(type),
           parameters: contentType.parameters,
+          hasParameters,
         });
       }
-    } else {
-      patterns.push({
-        key: type,
-        match: match(type),
-        parameters: contentType.parameters,
-      });
     }
   }
 
-  return function (value: string): string | undefined {
-    const contentType = parse(value, { parameters: hasParameters });
+  /**
+   * Check whether a content type matches one of the configured types.
+   */
+  is(value: string): string | undefined {
+    const contentType = parse(value, { parameters: this.hasParameters });
+    return this.contentType(contentType);
+  }
 
-    for (let i = 0; i < patterns.length; i++) {
-      const pattern = patterns[i];
+  /**
+   * Check whether a request body matches one of the configured types.
+   */
+  request(req: RequestLike): string | undefined {
+    if (!hasBody(req)) return;
+    const header = req.headers["content-type"];
+    if (!header) return;
+    const value = Array.isArray(header) ? header[0] : header;
+    return this.is(value);
+  }
+
+  contentType(
+    contentType: Pick<ContentType, "type" | "parameters">,
+  ): string | undefined {
+    for (const pattern of this.patterns) {
       if (pattern.match(contentType.type)) {
         const parametersMatch =
-          !hasParameters ||
+          !pattern.hasParameters ||
           Object.keys(pattern.parameters).every(
             (key) => pattern.parameters[key] === contentType.parameters[key],
           );
@@ -168,15 +170,5 @@ export function is(
         if (parametersMatch) return pattern.key;
       }
     }
-
-    return undefined;
-  };
-}
-
-export class TypeIs {
-  constructor(types: string[], options?: NormalizeOptions) {
-    this.matcher = is(types, options);
   }
-
-  private matcher: (value: string) => string | undefined;
 }

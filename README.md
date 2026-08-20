@@ -18,18 +18,20 @@ $ npm install type-is
 
 ```js
 import { createServer } from "http";
-import * as typeis from "type-is";
+import { TypeIs } from "type-is";
 
-const isText = typeis.request(["text/*"]);
+const isText = new TypeIs(["text/*"]);
 
 http.createServer(function (req, res) {
-  res.end("you " + (isText(req) ? "sent" : "did not send") + " me text");
+  res.end(
+    "you " + (isText.request(req) ? "sent" : "did not send") + " me text",
+  );
 });
 ```
 
-### typeis.is(types)
+### new TypeIs(types[, options])
 
-Compiles an array of type strings into a reusable matcher. The returned function accepts a `content-type` header and returns the first configured type that matches, or `undefined` when none match.
+Creates a reusable content type matcher. The optional `options` object accepts a `lookup` function for resolving shorthand types.
 
 Each type in the `types` array can be one of the following:
 
@@ -39,30 +41,34 @@ Each type in the `types` array can be one of the following:
 - A configured shorthand such as `multipart` or `urlencoded`.
 - Any of the above with parameters that must also match, such as `application/json; charset=utf-8`.
 
-```js
-var isJson = typeis.is(["application/json", "application/*+json"]);
+### typeIs.is(value)
 
-isJson("application/json"); // => 'application/json'
-isJson("application/vnd.api+json"); // => 'application/*+json'
-isJson("text/html"); // => undefined
+Checks a `content-type` value and returns the first configured type that matches, or `undefined` when none match.
+
+```js
+const isJson = new TypeIs(["application/json", "application/*+json"]);
+
+isJson.is("application/json"); // => 'application/json'
+isJson.is("application/vnd.api+json"); // => 'application/*+json'
+isJson.is("text/html"); // => undefined
 ```
 
-### typeis.request(types)
+### typeIs.request(request)
 
-Checks if the `request` is one of the `types`. If the request has no body, even if there is a `Content-Type` header, then `undefined` is returned. Otherwise it uses `is` to check the `content-type` header.
+Checks a request against the configured types. If the request has no body, even if there is a `Content-Type` header, then `undefined` is returned. Otherwise it uses `is` to check the `content-type` header.
 
 ```js
 // req.headers.content-type = 'application/json'
 
-request(["json"])(req); // => 'json'
-request(["html", "json"])(req); // => 'json'
-request(["application/*"])(req); // => 'application/*'
-request(["application/json"])(req); // => 'application/json'
+new TypeIs(["json"]).request(req); // => 'application/json'
+new TypeIs(["html", "json"]).request(req); // => 'application/json'
+new TypeIs(["application/*"]).request(req); // => 'application/*'
+new TypeIs(["application/json"]).request(req); // => 'application/json'
 
-request(["html"])(req); // => undefined
+new TypeIs(["html"]).request(req); // => undefined
 ```
 
-### typeis.hasBody(request)
+### hasBody(request)
 
 Returns true if the given `request` has a body based on the HTTP headers provided.
 
@@ -80,7 +86,7 @@ if (typeis.hasBody(req)) {
 }
 ```
 
-### typeis.match(expected)
+### match(expected)
 
 Compile the type string `expected` into a function that matches a MIME type.
 
@@ -92,7 +98,7 @@ typeis.match("*/*")("text/html"); // => true
 typeis.match("*/*+json")("application/x-custom+json"); // => true
 ```
 
-### typeis.normalize(type)
+### normalize(type)
 
 Normalize a `type` string. This works by performing the following:
 
@@ -114,24 +120,24 @@ You can pass an options object of `{ lookup: (value: string) => string | string[
 
 ```js
 const express = require("express");
-const typeis = require("type-is");
+const { TypeIs, hasBody } = require("type-is");
 
 const app = express();
-const typeIs = typeis.request(["urlencoded", "json", "multipart"]);
+const typeIs = new TypeIs(["urlencoded", "json", "multipart"]);
 
 app.use(function bodyParser(req, res, next) {
-  if (!typeis.hasBody(req)) {
+  if (!hasBody(req)) {
     return next();
   }
 
-  switch (typeIs(req)) {
-    case "urlencoded":
+  switch (typeIs.request(req)) {
+    case "application/x-www-form-urlencoded":
       // parse urlencoded body
       throw new Error("implement urlencoded body parsing");
-    case "json":
+    case "application/json":
       // parse json body
       throw new Error("implement json body parsing");
-    case "multipart":
+    case "multipart/*":
       // parse multipart body
       throw new Error("implement multipart body parsing");
     default:
