@@ -9,6 +9,12 @@ import { parse } from "content-type";
 import { lookup } from "mime-types";
 import { test } from "media-typer";
 
+const JAVASCRIPT_MEDIA_TYPES = new Set([
+  "application/javascript",
+  "application/x-javascript",
+  "text/javascript",
+]);
+
 /**
  * Node.js HTTP request shape.
  */
@@ -58,7 +64,12 @@ export function is(
 
   for (const type of types) {
     const normalized = normalize(type);
-    if (match(normalized, val)) {
+    const extension = type.startsWith(".") ? type.slice(1) : type;
+
+    if (
+      (extension === "js" && JAVASCRIPT_MEDIA_TYPES.has(val)) ||
+      match(normalized, val)
+    ) {
       return type[0] === "+" || type.indexOf("*") !== -1 ? val : type;
     }
   }

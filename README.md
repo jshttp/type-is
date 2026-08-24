@@ -46,6 +46,9 @@ Each type in the `types` array can be one of the following:
   `*/vnd+json` or `application/*+json`. The full mime type will be returned
   if matched.
 
+The JavaScript extensions `js` and `.js` match `application/javascript`,
+`application/x-javascript`, and `text/javascript`.
+
 Some examples to illustrate the inputs and returned value:
 
 ```js
@@ -97,6 +100,9 @@ Each type in the `types` array can be one of the following:
 - A suffix such as `+json`. This can be combined with a wildcard such as
   `*/vnd+json` or `application/*+json`. The full mime type will be returned
   if matched.
+
+The JavaScript extensions `js` and `.js` match `application/javascript`,
+`application/x-javascript`, and `text/javascript`.
 
 Some examples to illustrate the inputs and returned value:
 

@@ -166,6 +166,42 @@ describe("request(req, types)", () => {
       assert.strictEqual(request(req, ["multipart"]), "multipart");
     });
   });
+
+  describe("when Content-Type is JavaScript", () => {
+    it('should match "js"', () => {
+      assert.strictEqual(
+        request(createRequest("application/javascript"), ["js"]),
+        "js",
+      );
+      assert.strictEqual(
+        request(createRequest("application/x-javascript"), ["js"]),
+        "js",
+      );
+      assert.strictEqual(
+        request(createRequest("text/javascript"), ["js"]),
+        "js",
+      );
+      assert.strictEqual(
+        request(createRequest("application/json"), ["js"]),
+        false,
+      );
+    });
+
+    it('should match ".js"', () => {
+      assert.strictEqual(
+        request(createRequest("application/javascript"), [".js"]),
+        ".js",
+      );
+      assert.strictEqual(
+        request(createRequest("application/x-javascript"), [".js"]),
+        ".js",
+      );
+      assert.strictEqual(
+        request(createRequest("text/javascript"), [".js"]),
+        ".js",
+      );
+    });
+  });
 });
 
 describe("hasBody(req)", () => {
@@ -338,6 +374,21 @@ describe("is(mediaType, types)", () => {
 
     it('should match "multipart"', () => {
       assert.strictEqual(is("multipart/form-data", ["multipart"]), "multipart");
+    });
+  });
+
+  describe("when media type is JavaScript", () => {
+    it('should match "js"', () => {
+      assert.strictEqual(is("application/javascript", ["js"]), "js");
+      assert.strictEqual(is("application/x-javascript", ["js"]), "js");
+      assert.strictEqual(is("text/javascript", ["js"]), "js");
+      assert.strictEqual(is("application/json", ["js"]), false);
+    });
+
+    it('should match ".js"', () => {
+      assert.strictEqual(is("application/javascript", [".js"]), ".js");
+      assert.strictEqual(is("application/x-javascript", [".js"]), ".js");
+      assert.strictEqual(is("text/javascript", [".js"]), ".js");
     });
   });
 });
