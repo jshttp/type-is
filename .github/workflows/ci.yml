@@ -15,6 +15,12 @@ jobs:
         node-version:
           - 18
           - '*'
+        # The ts-scripts format step is known to trip on Windows line endings;
+        # keep the Windows legs informational until that is measured in CI.
+        include:
+          - os: windows-latest
+            experimental: true
+    continue-on-error: ${{ matrix.experimental == true }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
