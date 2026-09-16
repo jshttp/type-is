@@ -5,7 +5,7 @@
  * MIT Licensed
  */
 
-import { parse, ContentType } from "content-type";
+import { parse, isTypeValid, isTokenValid, ContentType } from "content-type";
 
 /**
  * Node.js HTTP request shape.
@@ -69,30 +69,52 @@ export function match(expected: string): (actual: string) => boolean {
   if (subtype.startsWith("*+")) {
     suffix = subtype.slice(1);
     subtype = "*";
+
+    if (!isTokenValid(suffix)) {
+      throw new TypeError(`Invalid mime type: ${expected}`);
+    }
   }
 
-  if (type !== "*" && subtype !== "*") {
-    return (actual: string): boolean => actual === expected;
+  if (type === "*" && subtype === "*") {
+    return (actual: string) => {
+      return actual.endsWith(suffix) && isTypeValid(actual);
+    };
   }
 
-  return function (actual: string): boolean {
-    const actualSlash = actual.indexOf("/");
-
-    if (actualSlash === -1 || actual.indexOf("/", actualSlash + 1) !== -1) {
-      return false;
+  if (type === "*") {
+    if (!isTokenValid(subtype)) {
+      throw new TypeError(`Invalid mime type: ${expected}`);
     }
 
-    if (subtype === "*") {
-      if (!actual.endsWith(suffix)) return false;
-      if (type === "*") return true;
-      return expectedSlash === actualSlash && actual.startsWith(type);
+    return (actual: string) => {
+      return (
+        actual.charAt(actual.length - subtype.length - 1) === "/" &&
+        actual.endsWith(subtype) &&
+        isTokenValid(actual.slice(0, actual.length - subtype.length - 1))
+      );
+    };
+  }
+
+  if (subtype === "*") {
+    if (!isTokenValid(type)) {
+      throw new TypeError(`Invalid mime type: ${expected}`);
     }
 
-    return (
-      actualSlash === actual.length - subtype.length - 1 &&
-      actual.endsWith(subtype)
-    );
-  };
+    return (actual: string) => {
+      return (
+        actual.endsWith(suffix) &&
+        actual.charAt(type.length) === "/" &&
+        actual.startsWith(type) &&
+        isTokenValid(actual.slice(type.length + 1))
+      );
+    };
+  }
+
+  if (!isTypeValid(expected)) {
+    throw new TypeError(`Invalid mime type: ${expected}`);
+  }
+
+  return (actual: string): boolean => actual === expected;
 }
 
 interface Pattern {
