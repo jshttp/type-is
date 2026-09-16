@@ -58,7 +58,7 @@ export function normalize(
 export function match(expected: string): (actual: string) => boolean {
   const expectedSlash = expected.indexOf("/");
 
-  if (expectedSlash === -1 || expected.indexOf("/", expectedSlash + 1) !== -1) {
+  if (expectedSlash === -1 || !isTypeValid(expected)) {
     throw new TypeError(`Invalid mime type: ${expected}`);
   }
 
@@ -69,10 +69,6 @@ export function match(expected: string): (actual: string) => boolean {
   if (subtype.startsWith("*+")) {
     suffix = subtype.slice(1);
     subtype = "*";
-
-    if (!isTokenValid(suffix)) {
-      throw new TypeError(`Invalid mime type: ${expected}`);
-    }
   }
 
   if (type === "*" && subtype === "*") {
@@ -82,10 +78,6 @@ export function match(expected: string): (actual: string) => boolean {
   }
 
   if (type === "*") {
-    if (!isTokenValid(subtype)) {
-      throw new TypeError(`Invalid mime type: ${expected}`);
-    }
-
     return (actual: string) => {
       return (
         actual.charAt(actual.length - subtype.length - 1) === "/" &&
@@ -96,10 +88,6 @@ export function match(expected: string): (actual: string) => boolean {
   }
 
   if (subtype === "*") {
-    if (!isTokenValid(type)) {
-      throw new TypeError(`Invalid mime type: ${expected}`);
-    }
-
     return (actual: string) => {
       return (
         actual.endsWith(suffix) &&
@@ -108,10 +96,6 @@ export function match(expected: string): (actual: string) => boolean {
         isTokenValid(actual.slice(type.length + 1))
       );
     };
-  }
-
-  if (!isTypeValid(expected)) {
-    throw new TypeError(`Invalid mime type: ${expected}`);
   }
 
   return (actual: string): boolean => actual === expected;
