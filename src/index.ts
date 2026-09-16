@@ -5,28 +5,13 @@
  * MIT Licensed
  */
 
-import { parse } from "content-type";
-import { lookup } from "mime-types";
-import { test } from "media-typer";
+import { parse, ContentType } from "content-type";
 
 /**
  * Node.js HTTP request shape.
  */
 export interface RequestLike {
   headers: Record<string, string | string[] | undefined>;
-}
-
-/**
- * Check if the incoming request contains the "Content-Type" header field, and
- * it contains any of the given mime `type`s. If there is no request body or
- * content type, `false` is returned. Otherwise, it returns the first `type`
- * that matches.
- */
-export function request(req: RequestLike, types?: string[]): string | false {
-  if (!hasBody(req)) return false;
-  const header = req.headers["content-type"];
-  if (!header) return false;
-  return is(Array.isArray(header) ? header[0] : header, types);
 }
 
 /**
@@ -40,82 +25,150 @@ export function hasBody(req: RequestLike): boolean {
   );
 }
 
-/**
- * Compare a `value` content-type with `types`. Each `type` can be an extension
- * like `html`, a special shortcut like `multipart` or `urlencoded`, or a mime
- * type.
- *
- * If no types match, `false` is returned. Otherwise, the first `type` that
- * matches is returned.
- */
-export function is(
-  value: string | undefined | null,
-  types?: string[],
-): string | false {
-  const val = normalizeType(value);
-  if (!val) return false;
-  if (!types || types.length === 0) return val;
-
-  for (const type of types) {
-    const normalized = normalize(type);
-    if (match(normalized, val)) {
-      return type[0] === "+" || type.indexOf("*") !== -1 ? val : type;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Normalize a mime type. If it's a shorthand, expand it to a valid mime type.
- */
-export function normalize(type: string): string {
-  switch (type) {
+export function DEFAULT_LOOKUP(value: string): string | string[] | undefined {
+  switch (value) {
     case "urlencoded":
       return "application/x-www-form-urlencoded";
     case "multipart":
       return "multipart/*";
+    case "json":
+      return "application/json";
+    default:
+      return undefined;
   }
+}
 
-  if (type.startsWith("+")) return `*/*${type}`;
-  if (type.includes("/")) return type;
-  return lookup(type) || "";
+export interface NormalizeOptions {
+  lookup?: (value: string) => string | string[] | undefined;
+}
+
+export function normalize(
+  value: string,
+  options?: NormalizeOptions,
+): string | string[] {
+  if (value.includes("/")) return value;
+  if (value.startsWith("+")) return `*/*${value}`;
+  const lookup = options?.lookup ?? DEFAULT_LOOKUP;
+  return lookup(value) ?? value;
 }
 
 /**
- * Check if `expected` mime type matches `actual` mime type with wildcard and
- * +suffix support.
+ * Compile an expected mime type into a reusable matcher.
  */
-export function match(expected: string, actual: string): boolean {
-  const actualParts = actual.split("/");
-  const expectedParts = expected.split("/");
+export function match(expected: string): (actual: string) => boolean {
+  const expectedSlash = expected.indexOf("/");
 
-  if (actualParts.length !== 2 || expectedParts.length !== 2) return false;
-
-  if (expectedParts[0] !== "*" && expectedParts[0] !== actualParts[0]) {
-    return false;
+  if (expectedSlash === -1 || expected.indexOf("/", expectedSlash + 1) !== -1) {
+    throw new TypeError(`Invalid mime type: ${expected}`);
   }
 
-  if (expectedParts[1].slice(0, 2) === "*+") {
+  const type = expected.slice(0, expectedSlash);
+  let subtype = expected.slice(expectedSlash + 1);
+  let suffix = "";
+
+  if (subtype.startsWith("*+")) {
+    suffix = subtype.slice(1);
+    subtype = "*";
+  }
+
+  if (type !== "*" && subtype !== "*") {
+    return (actual: string): boolean => actual === expected;
+  }
+
+  return function (actual: string): boolean {
+    const actualSlash = actual.indexOf("/");
+
+    if (actualSlash === -1 || actual.indexOf("/", actualSlash + 1) !== -1) {
+      return false;
+    }
+
+    if (subtype === "*") {
+      if (!actual.endsWith(suffix)) return false;
+      if (type === "*") return true;
+      return expectedSlash === actualSlash && actual.startsWith(type);
+    }
+
     return (
-      expectedParts[1].length <= actualParts[1].length + 1 &&
-      expectedParts[1].slice(1) ===
-        actualParts[1].slice(1 - expectedParts[1].length)
+      actualSlash === actual.length - subtype.length - 1 &&
+      actual.endsWith(subtype)
     );
-  }
-
-  if (expectedParts[1] !== "*" && expectedParts[1] !== actualParts[1]) {
-    return false;
-  }
-
-  return true;
+  };
 }
 
-/**
- * Normalize a type and remove parameters.
- */
-function normalizeType(value: string | undefined | null): string | null {
-  if (!value) return null;
-  const { type } = parse(value, { parameters: false });
-  return test(type) ? type : null;
+interface Pattern {
+  key: string;
+  match: (value: string) => boolean;
+  parameters: Record<string, string>;
+  hasParameters: boolean;
+}
+
+export class TypeIs {
+  private readonly hasParameters: boolean = false;
+  private readonly patterns: Pattern[] = [];
+
+  /**
+   * Compile a list of expected mime types into a reusable matcher.
+   */
+  constructor(types: readonly string[], options?: NormalizeOptions) {
+    for (const t of types) {
+      const contentType = parse(t);
+      const hasParameters = Object.keys(contentType.parameters).length > 0;
+      const type = normalize(contentType.type, options);
+
+      this.hasParameters ||= hasParameters;
+
+      if (Array.isArray(type)) {
+        for (const t of type) {
+          this.patterns.push({
+            key: t,
+            match: match(t),
+            parameters: contentType.parameters,
+            hasParameters,
+          });
+        }
+      } else {
+        this.patterns.push({
+          key: type,
+          match: match(type),
+          parameters: contentType.parameters,
+          hasParameters,
+        });
+      }
+    }
+  }
+
+  /**
+   * Check whether a content type matches one of the configured types.
+   */
+  is(value: string): string | undefined {
+    const contentType = parse(value, { parameters: this.hasParameters });
+    return this.contentType(contentType);
+  }
+
+  /**
+   * Check whether a request body matches one of the configured types.
+   */
+  request(req: RequestLike): string | undefined {
+    if (!hasBody(req)) return;
+    const header = req.headers["content-type"];
+    if (!header) return;
+    const value = Array.isArray(header) ? header[0] : header;
+    return this.is(value);
+  }
+
+  contentType(
+    contentType: Pick<ContentType, "type" | "parameters">,
+  ): string | undefined {
+    for (const pattern of this.patterns) {
+      if (pattern.match(contentType.type)) {
+        const parametersMatch =
+          !pattern.hasParameters ||
+          Object.keys(pattern.parameters).every(
+            (key) => pattern.parameters[key] === contentType.parameters[key],
+          );
+
+        if (parametersMatch) return pattern.key;
+      }
+    }
+  }
 }
