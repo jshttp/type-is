@@ -149,8 +149,8 @@ export class TypeIs {
   constructor(types: readonly string[], options?: TypeIsOptions) {
     this.parameterValue = options?.parameterValue ?? DEFAULT_PARAMETER_VALUE;
 
-    for (const t of types) {
-      const contentType = parse(t);
+    for (const key of types) {
+      const contentType = parse(key);
       const hasParameters = Object.keys(contentType.parameters).length > 0;
       const type = normalize(contentType.type, options);
       const parameters = contentType.parameters;
@@ -165,7 +165,7 @@ export class TypeIs {
       if (Array.isArray(type)) {
         for (const t of type) {
           this.patterns.push({
-            key: t,
+            key,
             match: match(t),
             parameters,
             hasParameters,
@@ -173,7 +173,7 @@ export class TypeIs {
         }
       } else {
         this.patterns.push({
-          key: type,
+          key,
           match: match(type),
           parameters,
           hasParameters,
