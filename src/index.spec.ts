@@ -504,6 +504,13 @@ describe("match(expected)", () => {
     assert.strictEqual(matches("text/html+xml"), false);
   });
 
+  it("should perform type wildcard matching with suffix", () => {
+    const matches = match("*/html+xml");
+    assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("application/html"), false);
+    assert.strictEqual(matches("text/html+xml"), true);
+  });
+
   it("should perform subtype wildcard matching", () => {
     const matches = match("text/*");
     assert.strictEqual(matches("text/html"), true);
@@ -516,12 +523,21 @@ describe("match(expected)", () => {
     const matches = match("*/*");
     assert.strictEqual(matches("text/html"), true);
     assert.strictEqual(matches("text/html+xml"), true);
+    assert.strictEqual(matches("text/html/xml"), false);
+  });
+
+  it("should perform subtype wildcard matching with specific suffix", () => {
+    const matches = match("text/*+xml");
+    assert.strictEqual(matches("text/html+xml"), true);
+    assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("text/+xml"), false);
   });
 
   it("should perform full wildcard matching with specific suffix", () => {
     const matches = match("*/*+xml");
     assert.strictEqual(matches("text/html+xml"), true);
     assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("text/+xml"), false);
   });
 
   it.each([

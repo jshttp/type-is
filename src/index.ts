@@ -72,8 +72,14 @@ export function match(expected: string): (actual: string) => boolean {
   }
 
   if (type === "*" && subtype === "*") {
+    if (!suffix) return (actual: string) => isTypeValid(actual);
+
     return (actual: string) => {
-      return actual.endsWith(suffix) && isTypeValid(actual);
+      return (
+        actual.charAt(actual.length - suffix.length - 1) !== "/" &&
+        actual.endsWith(suffix) &&
+        isTypeValid(actual)
+      );
     };
   }
 
@@ -82,7 +88,7 @@ export function match(expected: string): (actual: string) => boolean {
       return (
         actual.charAt(actual.length - subtype.length - 1) === "/" &&
         actual.endsWith(subtype) &&
-        isTokenValid(actual.slice(0, actual.length - subtype.length - 1))
+        isTokenValid(actual, 0, actual.length - subtype.length - 1)
       );
     };
   }
@@ -90,10 +96,10 @@ export function match(expected: string): (actual: string) => boolean {
   if (subtype === "*") {
     return (actual: string) => {
       return (
-        actual.endsWith(suffix) &&
         actual.charAt(type.length) === "/" &&
         actual.startsWith(type) &&
-        isTokenValid(actual.slice(type.length + 1))
+        actual.endsWith(suffix) &&
+        isTokenValid(actual, type.length + 1, actual.length - suffix.length)
       );
     };
   }

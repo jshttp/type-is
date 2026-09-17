@@ -33,7 +33,7 @@
     "test": "ts-scripts test"
   },
   "dependencies": {
-    "content-type": "^3.1.0"
+    "content-type": "^3.1.1"
   },
   "devDependencies": {
     "@borderless/ts-scripts": "^0.15.0",
