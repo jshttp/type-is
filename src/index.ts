@@ -25,6 +25,9 @@ export function hasBody(req: RequestLike): boolean {
   );
 }
 
+/**
+ * The default behavior of `lookup` handles only a few common shorthands.
+ */
 export function DEFAULT_LOOKUP(value: string): string | string[] | undefined {
   switch (value) {
     case "urlencoded":
@@ -42,6 +45,13 @@ export interface NormalizeOptions {
   lookup?: (value: string) => string | string[] | undefined;
 }
 
+/**
+ * Normalize MIME type by:
+ *
+ * - If the string contains a `/`, then it is returned as the type.
+ * - If the string starts with `+` (so it is a `+suffix` shorthand like `+json`), then it is expanded to contain the complete wildcard notation of `*\/*+suffix`.
+ * - Else the string is assumed to be a file extension and the mapped media type is returned, or the original input if there is no mapping.
+ */
 export function normalize(
   value: string,
   options?: NormalizeOptions,
@@ -114,38 +124,41 @@ interface Pattern {
   hasParameters: boolean;
 }
 
-/**
- * Parameters whose values are defined as case-insensitive.
- *
- * The `charset` parameter values are case-insensitive.
- * @see https://datatracker.ietf.org/doc/html/rfc2046#section-4.1.2
- */
-const CASE_INSENSITIVE_PARAMETERS = new Set(["charset"]);
+export type ParameterValue = (key: string, value: string) => string;
 
 /**
- * Get a parameter value normalized for comparison.
+ * Normalize a parameter value for comparison.
  */
-function parameterValue(
-  parameters: Record<string, string>,
-  key: string,
-): string | undefined {
-  const value = parameters[key];
-  if (value === undefined) return undefined;
-  return CASE_INSENSITIVE_PARAMETERS.has(key) ? value.toLowerCase() : value;
+export function DEFAULT_PARAMETER_VALUE(key: string, value: string): string {
+  if (key === "charset") return value.toLowerCase();
+  return value;
+}
+
+export interface TypeIsOptions extends NormalizeOptions {
+  parameterValue?: ParameterValue;
 }
 
 export class TypeIs {
   private readonly hasParameters: boolean = false;
   private readonly patterns: Pattern[] = [];
+  private readonly parameterValue: ParameterValue;
 
   /**
    * Compile a list of expected mime types into a reusable matcher.
    */
-  constructor(types: readonly string[], options?: NormalizeOptions) {
+  constructor(types: readonly string[], options?: TypeIsOptions) {
+    this.parameterValue = options?.parameterValue ?? DEFAULT_PARAMETER_VALUE;
+
     for (const t of types) {
       const contentType = parse(t);
       const hasParameters = Object.keys(contentType.parameters).length > 0;
       const type = normalize(contentType.type, options);
+      const parameters = contentType.parameters;
+
+      // Normalize parameter values before comparison.
+      for (const key of Object.keys(parameters)) {
+        parameters[key] = this.parameterValue(key, parameters[key]);
+      }
 
       this.hasParameters ||= hasParameters;
 
@@ -154,7 +167,7 @@ export class TypeIs {
           this.patterns.push({
             key: t,
             match: match(t),
-            parameters: contentType.parameters,
+            parameters,
             hasParameters,
           });
         }
@@ -162,7 +175,7 @@ export class TypeIs {
         this.patterns.push({
           key: type,
           match: match(type),
-          parameters: contentType.parameters,
+          parameters,
           hasParameters,
         });
       }
@@ -195,11 +208,12 @@ export class TypeIs {
       if (pattern.match(contentType.type)) {
         const parametersMatch =
           !pattern.hasParameters ||
-          Object.keys(pattern.parameters).every(
-            (key) =>
-              parameterValue(pattern.parameters, key) ===
-              parameterValue(contentType.parameters, key),
-          );
+          Object.keys(pattern.parameters).every((key) => {
+            const actual = contentType.parameters[key];
+            if (actual === undefined) return false;
+            const expected = pattern.parameters[key];
+            return expected === this.parameterValue(key, actual);
+          });
 
         if (parametersMatch) return pattern.key;
       }
