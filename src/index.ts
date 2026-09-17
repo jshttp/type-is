@@ -102,6 +102,26 @@ interface Pattern {
   hasParameters: boolean;
 }
 
+/**
+ * Parameters whose values are defined as case-insensitive.
+ *
+ * The `charset` parameter values are case-insensitive.
+ * @see https://datatracker.ietf.org/doc/html/rfc2046#section-4.1.2
+ */
+const CASE_INSENSITIVE_PARAMETERS = new Set(["charset"]);
+
+/**
+ * Get a parameter value normalized for comparison.
+ */
+function parameterValue(
+  parameters: Record<string, string>,
+  key: string,
+): string | undefined {
+  const value = parameters[key];
+  if (value === undefined) return undefined;
+  return CASE_INSENSITIVE_PARAMETERS.has(key) ? value.toLowerCase() : value;
+}
+
 export class TypeIs {
   private readonly hasParameters: boolean = false;
   private readonly patterns: Pattern[] = [];
@@ -164,7 +184,9 @@ export class TypeIs {
         const parametersMatch =
           !pattern.hasParameters ||
           Object.keys(pattern.parameters).every(
-            (key) => pattern.parameters[key] === contentType.parameters[key],
+            (key) =>
+              parameterValue(pattern.parameters, key) ===
+              parameterValue(contentType.parameters, key),
           );
 
         if (parametersMatch) return pattern.key;
