@@ -22,7 +22,7 @@ import { TypeIs } from "type-is";
 
 const isText = new TypeIs(["text/*"]);
 
-http.createServer(function (req, res) {
+createServer(function (req, res) {
   res.end(
     "you " + (isText.request(req) ? "sent" : "did not send") + " me text",
   );
@@ -61,11 +61,10 @@ Checks a request against the configured types. If the request has no body, even 
 // req.headers.content-type = 'application/json'
 
 new TypeIs(["json"]).request(req); // => 'application/json'
-new TypeIs(["html", "json"]).request(req); // => 'application/json'
 new TypeIs(["application/*"]).request(req); // => 'application/*'
 new TypeIs(["application/json"]).request(req); // => 'application/json'
 
-new TypeIs(["html"]).request(req); // => undefined
+new TypeIs(["text/html"]).request(req); // => undefined
 ```
 
 ### hasBody(request)

@@ -1,7 +1,49 @@
 import { describe, it, assert } from "vitest";
 import { TypeIs, hasBody, normalize, match } from "./index.js";
 
+const invalidTypes = [
+  "",
+  "text",
+  "/",
+  "/html",
+  "text/",
+  "text/html/xml",
+  "text//html",
+  "text /html",
+  "text/ html",
+  "text\t/html",
+  "text/ht ml",
+  "text/ht\tml",
+  "text/(html)",
+  "text/html,application/json",
+  "text/html\u0000",
+  "text/htm\u007f",
+  "text/htm\u00e9",
+  "text/ht ml+xml",
+  "text /html+xml",
+];
+
+const matchingPatterns = [
+  "text/html",
+  "*/html",
+  "text/*",
+  "*/*",
+  "text/*+xml",
+  "*/*+xml",
+];
+
 describe("TypeIs#request(req)", () => {
+  describe.each(matchingPatterns)("given %s", (expected) => {
+    it.each(invalidTypes)("should not match invalid header %j", (actual) => {
+      const matches = new TypeIs([expected]);
+      assert.strictEqual(matches.request(createRequest(actual)), undefined);
+      assert.strictEqual(
+        matches.request(createRequest(`${actual}; charset=utf-8`)),
+        undefined,
+      );
+    });
+  });
+
   it("should ignore params", () => {
     const req = createRequest("text/html; charset=utf-8");
     assert.strictEqual(new TypeIs(["text/*"]).request(req), "text/*");
@@ -462,6 +504,13 @@ describe("match(expected)", () => {
     assert.strictEqual(matches("text/html+xml"), false);
   });
 
+  it("should perform type wildcard matching with suffix", () => {
+    const matches = match("*/html+xml");
+    assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("application/html"), false);
+    assert.strictEqual(matches("text/html+xml"), true);
+  });
+
   it("should perform subtype wildcard matching", () => {
     const matches = match("text/*");
     assert.strictEqual(matches("text/html"), true);
@@ -474,23 +523,43 @@ describe("match(expected)", () => {
     const matches = match("*/*");
     assert.strictEqual(matches("text/html"), true);
     assert.strictEqual(matches("text/html+xml"), true);
+    assert.strictEqual(matches("text/html/xml"), false);
+  });
+
+  it("should perform subtype wildcard matching with specific suffix", () => {
+    const matches = match("text/*+xml");
+    assert.strictEqual(matches("text/html+xml"), true);
+    assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("text/+xml"), false);
   });
 
   it("should perform full wildcard matching with specific suffix", () => {
     const matches = match("*/*+xml");
     assert.strictEqual(matches("text/html+xml"), true);
     assert.strictEqual(matches("text/html"), false);
+    assert.strictEqual(matches("text/+xml"), false);
   });
 
-  it("should reject invalid expected types", () => {
-    assert.throws(() => match("text"), /Invalid mime type/);
-    assert.throws(() => match("text\/html\/xml"), /Invalid mime type/);
+  it.each([
+    ...invalidTypes,
+    "*/",
+    "/*",
+    "*/ht ml",
+    "text /*",
+    "text/*+xm l",
+    "*/*+xm l",
+    "text/html; charset=utf-8",
+  ])("should reject invalid expected type %j", (expected) => {
+    assert.throws(() => match(expected), TypeError, "Invalid mime type");
   });
 
-  it("should not match invalid actual types", () => {
-    const matches = match("text/*");
-    assert.strictEqual(matches("text"), false);
-    assert.strictEqual(matches("text/html/xml"), false);
+  describe.each(matchingPatterns)("given %s", (expected) => {
+    it.each(invalidTypes)(
+      "should not match invalid actual type %j",
+      (actual) => {
+        assert.strictEqual(match(expected)(actual), false);
+      },
+    );
   });
 });
 

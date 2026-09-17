@@ -5,7 +5,7 @@
  * MIT Licensed
  */
 
-import { parse, ContentType } from "content-type";
+import { parse, isTypeValid, isTokenValid, ContentType } from "content-type";
 
 /**
  * Node.js HTTP request shape.
@@ -58,7 +58,7 @@ export function normalize(
 export function match(expected: string): (actual: string) => boolean {
   const expectedSlash = expected.indexOf("/");
 
-  if (expectedSlash === -1 || expected.indexOf("/", expectedSlash + 1) !== -1) {
+  if (expectedSlash === -1 || !isTypeValid(expected)) {
     throw new TypeError(`Invalid mime type: ${expected}`);
   }
 
@@ -71,28 +71,40 @@ export function match(expected: string): (actual: string) => boolean {
     subtype = "*";
   }
 
-  if (type !== "*" && subtype !== "*") {
-    return (actual: string): boolean => actual === expected;
+  if (type === "*" && subtype === "*") {
+    if (!suffix) return (actual: string) => isTypeValid(actual);
+
+    return (actual: string) => {
+      return (
+        actual.charAt(actual.length - suffix.length - 1) !== "/" &&
+        actual.endsWith(suffix) &&
+        isTypeValid(actual)
+      );
+    };
   }
 
-  return function (actual: string): boolean {
-    const actualSlash = actual.indexOf("/");
+  if (type === "*") {
+    return (actual: string) => {
+      return (
+        actual.charAt(actual.length - subtype.length - 1) === "/" &&
+        actual.endsWith(subtype) &&
+        isTokenValid(actual, 0, actual.length - subtype.length - 1)
+      );
+    };
+  }
 
-    if (actualSlash === -1 || actual.indexOf("/", actualSlash + 1) !== -1) {
-      return false;
-    }
+  if (subtype === "*") {
+    return (actual: string) => {
+      return (
+        actual.charAt(type.length) === "/" &&
+        actual.startsWith(type) &&
+        actual.endsWith(suffix) &&
+        isTokenValid(actual, type.length + 1, actual.length - suffix.length)
+      );
+    };
+  }
 
-    if (subtype === "*") {
-      if (!actual.endsWith(suffix)) return false;
-      if (type === "*") return true;
-      return expectedSlash === actualSlash && actual.startsWith(type);
-    }
-
-    return (
-      actualSlash === actual.length - subtype.length - 1 &&
-      actual.endsWith(subtype)
-    );
-  };
+  return (actual: string): boolean => actual === expected;
 }
 
 interface Pattern {
