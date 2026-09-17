@@ -29,9 +29,12 @@ createServer(function (req, res) {
 });
 ```
 
-### new TypeIs(types[, options])
+### new TypeIs(types, options?)
 
-Creates a reusable content type matcher. The optional `options` object accepts a `lookup` function for resolving shorthand types.
+Creates a reusable content type matcher. The optional `options` object accepts:
+
+- `lookup`: A function for resolving shorthand types (see [`normalize`](#normalizetype)).
+- `parameterValue`: A `(key: string, value: string) => string` function that normalizes both configured and incoming parameter values before comparison. By default, `charset` values are lowercased and other values are unchanged.
 
 Each type in the `types` array can be one of the following:
 
@@ -39,7 +42,7 @@ Each type in the `types` array can be one of the following:
 - A mime type with a wildcard such as `*/*` or `*/json` or `application/*`.
 - A suffix such as `+json`. This can be combined with a wildcard such as `*/vnd+json` or `application/*+json`.
 - A configured shorthand such as `multipart` or `urlencoded`.
-- Any of the above with parameters that must also match, such as `application/json; charset=utf-8`.
+- Any of the above with parameters that must also match, such as `text/html; charset=utf-8`.
 
 ### typeIs.is(value)
 
@@ -97,7 +100,7 @@ typeis.match("*/*")("text/html"); // => true
 typeis.match("*/*+json")("application/x-custom+json"); // => true
 ```
 
-### normalize(type)
+### normalize(type, options?)
 
 Normalize a `type` string. This works by performing the following:
 
