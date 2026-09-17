@@ -45,6 +45,7 @@ test("is", async ({ bench }) => {
   const exact = new TypeIs(["application/json"]);
   const wildcard = new TypeIs(["text/*", "application/*"]);
   const suffix = new TypeIs(["application/*+json"]);
+  const param = new TypeIs(["text/html; charset=utf-8"]);
 
   await bench.compare(
     bench("exact match", () => {
@@ -55,6 +56,9 @@ test("is", async ({ bench }) => {
     }),
     bench("suffix match", () => {
       suffix.is("application/vnd.api+json");
+    }),
+    bench("param", () => {
+      param.is("text/html; CHARSET=UTF-8");
     }),
     { time: 300, iterations: 32 },
   );
