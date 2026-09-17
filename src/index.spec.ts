@@ -100,7 +100,7 @@ describe("TypeIs#request(req)", () => {
     it("should return the matched type or undefined", () => {
       const req = createRequest("application/json");
 
-      assert.strictEqual(new TypeIs(["json"]).request(req), "application/json");
+      assert.strictEqual(new TypeIs(["json"]).request(req), "json");
       assert.strictEqual(
         new TypeIs(["application/json"]).request(req),
         "application/json",
@@ -155,7 +155,7 @@ describe("TypeIs#request(req)", () => {
     it("should match suffix types", () => {
       const req = createRequest("application/vnd+json");
 
-      assert.strictEqual(new TypeIs(["+json"]).request(req), "*/*+json");
+      assert.strictEqual(new TypeIs(["+json"]).request(req), "+json");
       assert.strictEqual(
         new TypeIs(["application/vnd+json"]).request(req),
         "application/vnd+json",
@@ -205,17 +205,14 @@ describe("TypeIs#request(req)", () => {
     it('should match "urlencoded"', () => {
       const req = createRequest("application/x-www-form-urlencoded");
 
-      assert.strictEqual(
-        new TypeIs(["urlencoded"]).request(req),
-        "application/x-www-form-urlencoded",
-      );
+      assert.strictEqual(new TypeIs(["urlencoded"]).request(req), "urlencoded");
       assert.strictEqual(
         new TypeIs(["json", "urlencoded"]).request(req),
-        "application/x-www-form-urlencoded",
+        "urlencoded",
       );
       assert.strictEqual(
         new TypeIs(["urlencoded", "json"]).request(req),
-        "application/x-www-form-urlencoded",
+        "urlencoded",
       );
     });
   });
@@ -233,7 +230,7 @@ describe("TypeIs#request(req)", () => {
     it('should match "multipart"', () => {
       const req = createRequest("multipart/form-data");
 
-      assert.strictEqual(new TypeIs(["multipart"]).request(req), "multipart/*");
+      assert.strictEqual(new TypeIs(["multipart"]).request(req), "multipart");
     });
   });
 });
@@ -265,7 +262,7 @@ describe("TypeIs#contentType(contentType)", () => {
         type: "text/html",
         parameters: { charset: "utf-8", boundary: "example" },
       }),
-      "text/html",
+      "text/html; charset=utf-8",
     );
     assert.strictEqual(
       matches.contentType({
@@ -284,14 +281,14 @@ describe("TypeIs#contentType(contentType)", () => {
         type: "text/html",
         parameters: { charset: "UTF-8" },
       }),
-      "text/html",
+      "text/html; charset=utf-8",
     );
     assert.strictEqual(
       new TypeIs(["text/html; charset=UTF-8"]).contentType({
         type: "text/html",
         parameters: { charset: "utf-8" },
       }),
-      "text/html",
+      "text/html; charset=UTF-8",
     );
   });
 
@@ -303,7 +300,7 @@ describe("TypeIs#contentType(contentType)", () => {
         type: "multipart/form-data",
         parameters: { boundary: "AaB03x" },
       }),
-      "multipart/form-data",
+      "multipart/form-data; boundary=AaB03x",
     );
     assert.strictEqual(
       matches.contentType({
@@ -367,14 +364,23 @@ describe("TypeIs#is(value)", () => {
 
   it("should match configured parameters", () => {
     const matches = new TypeIs(["text/html; charset=utf-8"]);
-    assert.strictEqual(matches.is("text/html; charset=utf-8"), "text/html");
+    assert.strictEqual(
+      matches.is("text/html; charset=utf-8"),
+      "text/html; charset=utf-8",
+    );
     assert.strictEqual(matches.is("text/html; charset=iso-8859-1"), undefined);
   });
 
   it("should match a configured charset case-insensitively", () => {
     const matches = new TypeIs(["text/html; charset=utf-8"]);
-    assert.strictEqual(matches.is("text/html; charset=UTF-8"), "text/html");
-    assert.strictEqual(matches.is('text/html; charset="UTF-8"'), "text/html");
+    assert.strictEqual(
+      matches.is("text/html; charset=UTF-8"),
+      "text/html; charset=utf-8",
+    );
+    assert.strictEqual(
+      matches.is('text/html; charset="UTF-8"'),
+      "text/html; charset=utf-8",
+    );
   });
 
   it("should not match invalid type", () => {
@@ -390,7 +396,7 @@ describe("TypeIs#is(value)", () => {
 
       assert.strictEqual(
         matches.is("application/json; profile=CUSTOM"),
-        "application/json",
+        "application/json; profile=Custom",
       );
       assert.strictEqual(
         matches.is("application/json; profile=other"),
@@ -413,7 +419,7 @@ describe("TypeIs#is(value)", () => {
         },
       });
 
-      assert.strictEqual(matches.is("application/yaml"), "application/yaml");
+      assert.strictEqual(matches.is("application/yaml"), "yaml");
       assert.strictEqual(matches.is("text/yaml"), undefined);
     });
 
@@ -429,8 +435,8 @@ describe("TypeIs#is(value)", () => {
         },
       });
 
-      assert.strictEqual(matches.is("application/yaml"), "application/yaml");
-      assert.strictEqual(matches.is("text/yaml"), "text/yaml");
+      assert.strictEqual(matches.is("application/yaml"), "yaml");
+      assert.strictEqual(matches.is("text/yaml"), "yaml");
     });
   });
 
@@ -485,7 +491,7 @@ describe("TypeIs#is(value)", () => {
     it("should match suffix types", () => {
       assert.strictEqual(
         new TypeIs(["+json"]).is("application/vnd+json"),
-        "*/*+json",
+        "+json",
       );
       assert.strictEqual(
         new TypeIs(["application/vnd+json"]).is("application/vnd+json"),
@@ -527,7 +533,7 @@ describe("TypeIs#is(value)", () => {
     it('should match "urlencoded"', () => {
       assert.strictEqual(
         new TypeIs(["urlencoded"]).is("application/x-www-form-urlencoded"),
-        "application/x-www-form-urlencoded",
+        "urlencoded",
       );
     });
   });
@@ -543,7 +549,7 @@ describe("TypeIs#is(value)", () => {
     it('should match "multipart"', () => {
       assert.strictEqual(
         new TypeIs(["multipart"]).is("multipart/form-data"),
-        "multipart/*",
+        "multipart",
       );
     });
   });
