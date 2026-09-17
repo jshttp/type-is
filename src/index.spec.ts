@@ -276,6 +276,44 @@ describe("TypeIs#contentType(contentType)", () => {
     );
   });
 
+  it("should match a configured charset case-insensitively", () => {
+    const matches = new TypeIs(["text/html; charset=utf-8"]);
+
+    assert.strictEqual(
+      matches.contentType({
+        type: "text/html",
+        parameters: { charset: "UTF-8" },
+      }),
+      "text/html",
+    );
+    assert.strictEqual(
+      new TypeIs(["text/html; charset=UTF-8"]).contentType({
+        type: "text/html",
+        parameters: { charset: "utf-8" },
+      }),
+      "text/html",
+    );
+  });
+
+  it("should keep other parameters case-sensitive", () => {
+    const matches = new TypeIs(["multipart/form-data; boundary=AaB03x"]);
+
+    assert.strictEqual(
+      matches.contentType({
+        type: "multipart/form-data",
+        parameters: { boundary: "AaB03x" },
+      }),
+      "multipart/form-data",
+    );
+    assert.strictEqual(
+      matches.contentType({
+        type: "multipart/form-data",
+        parameters: { boundary: "aab03x" },
+      }),
+      undefined,
+    );
+  });
+
   it("should fall through a parameter mismatch", () => {
     const matches = new TypeIs(["text/html; charset=utf-8", "text/html"]);
 
@@ -331,6 +369,12 @@ describe("TypeIs#is(value)", () => {
     const matches = new TypeIs(["text/html; charset=utf-8"]);
     assert.strictEqual(matches.is("text/html; charset=utf-8"), "text/html");
     assert.strictEqual(matches.is("text/html; charset=iso-8859-1"), undefined);
+  });
+
+  it("should match a configured charset case-insensitively", () => {
+    const matches = new TypeIs(["text/html; charset=utf-8"]);
+    assert.strictEqual(matches.is("text/html; charset=UTF-8"), "text/html");
+    assert.strictEqual(matches.is('text/html; charset="UTF-8"'), "text/html");
   });
 
   it("should not match invalid type", () => {
