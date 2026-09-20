@@ -33,6 +33,8 @@ export function DEFAULT_LOOKUP(value: string): string | string[] | undefined {
       return "multipart/*";
     case "json":
       return "application/json";
+    case "xml":
+      return ["application/xml", "text/xml"];
     default:
       return undefined;
   }

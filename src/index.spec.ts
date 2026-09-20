@@ -201,6 +201,18 @@ describe("TypeIs#request(req)", () => {
     });
   });
 
+  describe("when Content-Type is application/xml or text/xml", () => {
+    it('should match "xml" for application/xml', () => {
+      const req = createRequest("application/xml");
+      assert.strictEqual(new TypeIs(["xml"]).request(req), "application/xml");
+    });
+
+    it('should match "xml" for text/xml', () => {
+      const req = createRequest("text/xml");
+      assert.strictEqual(new TypeIs(["xml"]).request(req), "text/xml");
+    });
+  });
+
   describe("when Content-Type: application/x-www-form-urlencoded", () => {
     it('should match "urlencoded"', () => {
       const req = createRequest("application/x-www-form-urlencoded");
@@ -504,6 +516,19 @@ describe("TypeIs#is(value)", () => {
     });
   });
 
+  describe("when media type is application/xml or text/xml", () => {
+    it('should match "xml" for application/xml', () => {
+      assert.strictEqual(
+        new TypeIs(["xml"]).is("application/xml"),
+        "application/xml",
+      );
+    });
+
+    it('should match "xml" for text/xml', () => {
+      assert.strictEqual(new TypeIs(["xml"]).is("text/xml"), "text/xml");
+    });
+  });
+
   describe("when media type is application/x-www-form-urlencoded", () => {
     it('should match "urlencoded"', () => {
       assert.strictEqual(
@@ -638,6 +663,10 @@ describe("normalize(type)", () => {
 
   it('should expand special "multipart"', () => {
     assert.strictEqual(normalize("multipart"), "multipart/*");
+  });
+
+  it('should expand special "xml"', () => {
+    assert.deepStrictEqual(normalize("xml"), ["application/xml", "text/xml"]);
   });
 });
 
