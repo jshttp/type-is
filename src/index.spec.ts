@@ -201,6 +201,26 @@ describe("TypeIs#request(req)", () => {
     });
   });
 
+  describe("when Content-Type is an XML type", () => {
+    it('should match "xml" for application/xml', () => {
+      const req = createRequest("application/xml");
+      assert.strictEqual(new TypeIs(["xml"]).request(req), "application/xml");
+    });
+
+    it('should match "xml" for text/xml', () => {
+      const req = createRequest("text/xml");
+      assert.strictEqual(new TypeIs(["xml"]).request(req), "text/xml");
+    });
+
+    it("should still prefer an earlier explicit type over the xml shortcut", () => {
+      const req = createRequest("text/xml");
+      assert.strictEqual(
+        new TypeIs(["text/plain", "xml"]).request(req),
+        "text/xml",
+      );
+    });
+  });
+
   describe("when Content-Type: application/x-www-form-urlencoded", () => {
     it('should match "urlencoded"', () => {
       const req = createRequest("application/x-www-form-urlencoded");
