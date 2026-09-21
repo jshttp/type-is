@@ -381,6 +381,25 @@ describe("TypeIs#is(value)", () => {
     assert.throws(() => new TypeIs(["text/html/"]), /Invalid mime type/);
   });
 
+  describe("with parameterValue option", () => {
+    it("should normalize expected and actual parameter values", () => {
+      const matches = new TypeIs(["application/json; profile=Custom"], {
+        parameterValue: (key, value) =>
+          key === "profile" ? value.toLowerCase() : value,
+      });
+
+      assert.strictEqual(
+        matches.is("application/json; profile=CUSTOM"),
+        "application/json",
+      );
+      assert.strictEqual(
+        matches.is("application/json; profile=other"),
+        undefined,
+      );
+      assert.strictEqual(matches.is("application/json"), undefined);
+    });
+  });
+
   describe("with lookup option", () => {
     it("should match a string mapping", () => {
       const matches = new TypeIs(["yaml"], {
