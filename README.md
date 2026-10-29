@@ -31,7 +31,9 @@ createServer(function (req, res) {
 
 ### new TypeIs(types, options?)
 
-Creates a reusable content type matcher. The optional `options` object accepts:
+Creates a reusable content type matcher. Matches return the original string from
+`types`, including any shorthand or wildcard, rather than the normalized MIME type.
+The optional `options` object accepts:
 
 - `lookup`: A function for resolving shorthand types (see [`normalize`](#normalizetype)).
 - `parameterValue`: A `(key: string, value: string) => string` function that normalizes both configured and incoming parameter values before comparison. By default, `charset` values are lowercased and other values are unchanged.
@@ -63,7 +65,7 @@ Checks a request against the configured types. If the request has no body, even 
 ```js
 // req.headers.content-type = 'application/json'
 
-new TypeIs(["json"]).request(req); // => 'application/json'
+new TypeIs(["json"]).request(req); // => 'json'
 new TypeIs(["application/*"]).request(req); // => 'application/*'
 new TypeIs(["application/json"]).request(req); // => 'application/json'
 
@@ -79,7 +81,9 @@ This is similar to how file existence works. If a body does exist, then this
 indicates that there is data to read from the Node.js request stream.
 
 ```js
-if (typeis.hasBody(req)) {
+import { hasBody } from "type-is";
+
+if (hasBody(req)) {
   // read the body, since there is one
 
   req.on("data", function (chunk) {
@@ -93,11 +97,13 @@ if (typeis.hasBody(req)) {
 Compile the type string `expected` into a function that matches a MIME type.
 
 ```js
-typeis.match("text/html")("text/html"); // => true
-typeis.match("*/html")("text/html"); // => true
-typeis.match("text/*")("text/html"); // => true
-typeis.match("*/*")("text/html"); // => true
-typeis.match("*/*+json")("application/x-custom+json"); // => true
+import { match } from "type-is";
+
+match("text/html")("text/html"); // => true
+match("*/html")("text/html"); // => true
+match("text/*")("text/html"); // => true
+match("*/*")("text/html"); // => true
+match("*/*+json")("application/x-custom+json"); // => true
 ```
 
 ### normalize(type, options?)
@@ -121,8 +127,8 @@ You can pass an options object of `{ lookup: (value: string) => string | string[
 ### Example body parser
 
 ```js
-const express = require("express");
-const { TypeIs, hasBody } = require("type-is");
+import express from "express";
+import { TypeIs, hasBody } from "type-is";
 
 const app = express();
 const typeIs = new TypeIs(["urlencoded", "json", "multipart"]);
@@ -133,13 +139,13 @@ app.use(function bodyParser(req, res, next) {
   }
 
   switch (typeIs.request(req)) {
-    case "application/x-www-form-urlencoded":
+    case "urlencoded":
       // parse urlencoded body
       throw new Error("implement urlencoded body parsing");
-    case "application/json":
+    case "json":
       // parse json body
       throw new Error("implement json body parsing");
-    case "multipart/*":
+    case "multipart":
       // parse multipart body
       throw new Error("implement multipart body parsing");
     default:
